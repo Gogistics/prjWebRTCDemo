@@ -1,0 +1,22 @@
+{
+  "name": "webrtc",
+  "version": "1.0.0",
+  "description": "WebRTC Tutorial",
+  "main": "server.js",
+  "scripts": {
+    "test": "./scripts/test"
+  },
+  "keywords": [
+    "WebRTC",
+    "Docker",
+    "MongoDB",
+    "Nginx",
+    "Node.js",
+    "Express.js",
+    "Socket.io",
+    "Angular.js",
+    "Bootstrap"
+  ],
+  "author": "Alan Tai",
+  "license": "MIT"
+}
