@@ -1,0 +1,17 @@
+extends base
+
+block css_block
+  // required css files
+  link(href='/public/css/broadcast.min.css' type='text/css' rel='stylesheet')
+
+block content
+  p Hello Broadcast
+
+block js_block
+  // for IE 11 or browser is not IE
+  script(type="text/javascript" src="/public/js/broadcast.min.js")
+
+  // for lt IE 9
+  <!--[if lt IE 9]>
+  <script type="text/javascript" src="/public/js/broadcast.min.js"></script>
+  <![endif]-->

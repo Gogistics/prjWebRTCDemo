@@ -18,5 +18,34 @@
     "Bootstrap"
   ],
   "author": "Alan Tai",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "angular": "^1.5.8",
+    "body-parser": "^1.15.2",
+    "bootstrap": "^3.3.7",
+    "connect-redis": "^3.1.0",
+    "cookie-parser": "^1.4.3",
+    "errorhandler": "^1.4.3",
+    "express": "^4.14.0",
+    "express-session": "^1.14.0",
+    "grunt": "^1.0.1",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-cssmin": "^1.0.1",
+    "grunt-contrib-htmlmin": "^2.0.0",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-uglify": "^2.0.0",
+    "jade": "^1.11.0",
+    "jquery": "^1.12.0",
+    "jquery-ui": "^1.12.0",
+    "method-override": "^2.3.6",
+    "mongodb": "^2.2.8",
+    "morgan": "^1.7.0",
+    "redis": "^2.6.2",
+    "serve-favicon": "^2.3.0",
+    "socket.io": "^1.4.8"
+  },
+  "devDependencies": {
+    "mocha": "^3.0.2",
+    "supertest": "^2.0.0"
+  }
 }

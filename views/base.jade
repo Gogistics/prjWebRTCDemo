@@ -1,0 +1,67 @@
+doctype html
+<!--[if lt IE 7]><html lang="en" class="no-js lt-ie9 lt-ie8 lt-ie7"><![endif]-->
+<!--[if !IE]><!-->
+html(lang="en")
+  <!--<![endif]-->
+  head
+    meta(http-equiv="Content-Type" content="text/html; charset=utf-8")
+    meta(http-equiv="X-UA-Compatible" content="IE=11,chrome,firefox,safari")
+    meta(name="apple-mobile-web-app-capable")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0")
+    meta(name='description', content='swebrtc demo')
+    meta(name='authors', content='Alan Tai')
+    meta(name='copyright', content='Copyright (c) 2016 Gogistics')
+    meta(name="msapplication-TileImage" content="/public/imgs/icons/ms-icon-144x144.png")
+    link(rel="manifest" href="/public/imgs/icons/manifest.json")
+
+    // set icons
+    link(rel="apple-touch-icon" sizes="57x57" href="/public/imgs/icons/apple-icon-57x57.png")
+    link(rel="apple-touch-icon" sizes="60x60" href="/public/imgs/icons/apple-icon-60x60.png")
+    link(rel="apple-touch-icon" sizes="72x72" href="/public/imgs/icons/apple-icon-72x72.png")
+    link(rel="apple-touch-icon" sizes="76x76" href="/public/imgs/icons/apple-icon-76x76.png")
+    link(rel="apple-touch-icon" sizes="114x114" href="/public/imgs/icons/apple-icon-114x114.png")
+    link(rel="apple-touch-icon" sizes="120x120" href="/public/imgs/icons/apple-icon-120x120.png")
+    link(rel="apple-touch-icon" sizes="144x144" href="/public/imgs/icons/apple-icon-144x144.png")
+    link(rel="apple-touch-icon" sizes="152x152" href="/public/imgs/icons/apple-icon-152x152.png")
+    link(rel="apple-touch-icon" sizes="180x180" href="/public/imgs/icons/apple-icon-180x180.png")
+    link(rel="icon" type="image/png" sizes="192x192"  href="/public/imgs/icons/android-icon-192x192.png")
+    link(rel="icon" type="image/png" sizes="32x32" href="/public/imgs/icons/favicon-32x32.png")
+    link(rel="icon" type="image/png" sizes="96x96" href="/public/imgs/icons/favicon-96x96.png")
+    link(rel="icon" type="image/png" sizes="16x16" href="/public/imgs/icons/favicon-16x16.png")
+
+    /* css files and block */
+    link(href='/public/css/jquery-ui.min.css' type='text/css' rel='stylesheet')
+    link(href='/public/css/bootstrap.min.css' type='text/css' rel='stylesheet')
+
+    block css_block
+    
+    title #{title}
+  body(id="page-top")
+    // alert for lt IE 9
+    <!--[if lt IE 9]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Right now we only support IE 11, Chrome, Firefox, and Safari.</p>
+    <![endif]-->
+
+    /* main content */
+    block content
+
+    /* js includsion block */
+    // for IE 11 or browser is not IE
+    script(type="text/javascript" src="/public/js/jquery.js")
+    script(type="text/javascript" src="/public/js/jquery-ui/jquery-ui.min.js")
+    script(type="text/javascript" src="/public/js/bootstrap.min.js")
+    script(type="text/javascript" src="/public/js/angular.min.js")
+
+    // for lt IE 9
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="/public/js/es5-shim/es5-shim.min.js"></script>
+    <script type="text/javascript" src="/public/js/json3/lib/json3.min.js"></script>
+    <script type="text/javascript" src="/public/js/html5shiv.min.js"></script>
+    <script type="text/javascript" src="/public/js/respond.min.js"></script>
+
+    <script type="text/javascript" src="/public/js/jquery.js"></script>
+    <script type="text/javascript" src="/public/js/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/public/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/public/js/angular.min.js"></script>
+    <![endif]-->
+    block js_block
