@@ -92,9 +92,51 @@
       return camera;
     }]);
 
-    window.broadcastApp.controller('broadcastCtrl', ['$scope', 'dataProvider', 'client', 'camera', function($scope, dataProvider, client, camera){
+    window.broadcastApp.controller('broadcastCtrl', ['$scope', '$window', 'dataProvider', 'client', 'camera', function($scope, $window, dataProvider, client, camera){
       var ctrl = this;
-      alert('Broadcast Ctrl');
+      ctrl.name = 'WebRTC Broadcast';
+      ctrl.link = '';
+      ctrl.cameraIsOn = false;
+      ctrl.isFirefox = !!navigator.mozGetUserMedia;
+      ctrl.isStartRecordingBtnDisabled = false;
+      ctrl.isStopRecordingBtnDisabled = true;
+      ctrl.userType = null;
+
+      $scope.$on('cameraIsOn', function(event, data){
+        $scope.digest(function(){
+          ctrl.cameraIsOn = data;
+        });
+      });
+
+      ctrl.init = function(arg_user_type){
+        ctrl.userType = arg_user_type;
+      }
+
+      ctrl.toggleCam = function(){
+        if(ctrl.cameraIsOn){
+          camera.stop().then(function(result){
+            client.send('leave');
+            client.setLocalStream(null);
+          }).catch(function(err){
+            console.log(err);
+          });
+        } else {
+          console.log('start camera...');
+          camera.start().then(function(result){
+            ctrl.link = $window.location.host + '/' + client.getId();
+            client.send('readyToStream', {name: ctrl.name, user_type: ctrl.userType});
+          });
+        }
+      }
+
+      ctrl.startRecording = function(){
+        // to be continued
+      }
+
+      ctrl.stopRecording = function(){
+        // to be continued
+      }
+
     }]);
   }
 })(jQuery);

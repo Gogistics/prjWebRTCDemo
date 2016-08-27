@@ -12,7 +12,7 @@ module.exports = function(app, streams) {
   }
 
   var broadcast = function(req, res){
-    var params = { ttile: 'Broadcast'};
+    var params = { ttile: 'Broadcast', user_type: 'regular_watcher'};
     res.render('broadcast.jade', params);
   }
 
