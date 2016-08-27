@@ -5,7 +5,9 @@ block css_block
   link(href='/public/css/index.min.css' type='text/css' rel='stylesheet')
 
 block content
-  p Hello WebRTC
+  div(ng-controller="indexCtrl as ctrl")
+    div(class="container text-center")
+      p(class="text-center") Hello WebRTC
 
 block js_block
   // for IE 11 or browser is not IE

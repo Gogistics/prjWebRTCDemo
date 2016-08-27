@@ -5,7 +5,9 @@ block css_block
   link(href='/public/css/broadcast.min.css' type='text/css' rel='stylesheet')
 
 block content
-  p Hello Broadcast
+  div(ng-controller="broadcastCtrl as ctrl")
+    div(class="container text-center")
+      p Hello Broadcast
 
 block js_block
   // for IE 11 or browser is not IE
