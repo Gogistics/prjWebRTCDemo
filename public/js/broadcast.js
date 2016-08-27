@@ -29,7 +29,8 @@
                     frameRate: { min: 35, ideal: 50, max: 60 }
                   }
               }
-          }
+          },
+      LOCAL_STREAM: null
     });
 
     window.broadcastApp.config(function(){
@@ -55,7 +56,43 @@
       return new PeerManager();
     });
 
-    window.broadcastApp.controller('broadcastCtrl', ['$scope', 'dataProvider', 'client', function($scope, dataProvider, client){
+    window.broadcastApp.factory('camera', ['$window', 'client', 'APP_VALUES', function($window, client, APP_VALUES){
+      var camera = {};
+      camera.preview = $window.document.getElementById('localVideo');
+      camera.isOn = false;
+      camera.start = function(){
+        return requestUserMedia(APP_VALUES.MEDIA_CONFIG)
+              .then(function(stream){
+                // onSuccess
+                APP_VALUES.LOCAL_STREAM = stream; // for recording
+                attachMediaStream(camera.preview, stream);
+                client.setLocalStream(stream);
+                camera.stream = stream;
+                camera.isOn = true;
+                $rootScope.$broadcast('cameraIsOn',true);
+                console.log('OnSuccess...');
+              }, function(err){
+                console.log('OnError...');
+              }).catch(Error('Failed to get access to local media'));
+      }
+      camera.stop = function(){
+        return new Promise(function(resolve, reject){
+          try{
+            camera.stream.stop();
+            camera.preview.src = '';
+            resolve();
+          }catch(err){
+            reject(err);
+          }
+        }).then(function(result){
+          camera.isOn = false;
+          $rootScope.$broadcast('cameraIsOn',false);
+        });
+      };
+      return camera;
+    }]);
+
+    window.broadcastApp.controller('broadcastCtrl', ['$scope', 'dataProvider', 'client', 'camera', function($scope, dataProvider, client, camera){
       var ctrl = this;
       alert('Broadcast Ctrl');
     }]);
