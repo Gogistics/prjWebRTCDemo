@@ -1,6 +1,6 @@
 /**/
 (function($){
-  angular.element(document.body).ready(function(){
+  angular.element(document).ready(function(){
     // bootstrap App
     angular.bootstrap(document.body, ['indexApp']);
   });
@@ -36,7 +36,7 @@
       }
     });
 
-    window.indexApp.controller('indexCtrl', ['$scope', '$dataProvider', function($scope, dataProvider){
+    window.indexApp.controller('indexCtrl', ['$scope', 'dataProvider', function($scope, dataProvider){
       var ctrl = this;
       alert('Index Ctrl');
     }]);

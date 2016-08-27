@@ -1,7 +1,7 @@
 /**/
 /**/
 (function($){
-  angular.element(document.body).ready(function(){
+  angular.element(document).ready(function(){
   	// bootstrap App
     angular.bootstrap(document.body, ['watcherApp']);
   });
