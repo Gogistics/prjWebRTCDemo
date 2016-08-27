@@ -7,7 +7,8 @@ block css_block
 block content
   div(ng-controller="broadcastCtrl as ctrl" ng-init="ctrl.init('#{user_type}')")
     div(class="container text-center")
-      input(class="btn btn-secondary" type="button" ng-click="localStream.toggleCam()" ng-value="[[ ctrl.cameraIsOn ? 'Stop' : 'Start' ]]")
+      br
+      input(class="btn btn-secondary" type="button" ng-click="ctrl.toggleCam()" value="[[ ctrl.cameraIsOn ? 'Stop' : 'Start' ]]")
       hr
       div(class="col-lg-12")
         video(id="localVideo" class="col-xs-12" ng-class="ctrl.isStartRecordingBtnDisabled ? 'is_recording' : 'is_not_recording' " muted="muted" autoplay="true")

@@ -26,8 +26,9 @@
                     minHeight: 720,
                     maxWidth: 1280,
                     maxHeight: 720,
-                    frameRate: { min: 35, ideal: 50, max: 60 }
-                  }
+                    frameRate: { min: 35, ideal: 50, max: 60 },
+                  },
+                  optional: [{sourceId: "X978DoubangoTelecomScreenCapturer785"}]
               }
           },
       LOCAL_STREAM: null
@@ -56,7 +57,7 @@
       return new PeerManager();
     });
 
-    window.broadcastApp.factory('camera', ['$window', 'client', 'APP_VALUES', function($window, client, APP_VALUES){
+    window.broadcastApp.factory('camera', ['$window', '$rootScope', 'client', 'APP_VALUES', function($window, $rootScope, client, APP_VALUES){
       var camera = {};
       camera.preview = $window.document.getElementById('localVideo');
       camera.isOn = false;
@@ -103,7 +104,8 @@
       ctrl.userType = null;
 
       $scope.$on('cameraIsOn', function(event, data){
-        $scope.digest(function(){
+        console.log(data);
+        $scope.$apply(function(){
           ctrl.cameraIsOn = data;
         });
       });
