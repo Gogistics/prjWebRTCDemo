@@ -1,4 +1,4 @@
-window.PeerManager = (function () {
+var PeerManager = (function () {
   // init socket manager
   var local_id,
       config = {
