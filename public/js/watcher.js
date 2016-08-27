@@ -18,7 +18,7 @@
     });
 
     // global values
-    window.broadcastApp.value('APP_VALUES', {
+    window.watcherApp.value('APP_VALUES', {
       EMAIL: 'gogistics@gogistics-tw.com',
       MEDIA_CONFIG: {audio: true,
               video: { mandatory: {
