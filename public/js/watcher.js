@@ -1,12 +1,15 @@
 /**/
 /**/
 (function($){
-  angular.element(document.body).ready(initApp);
+  angular.element(document.body).ready(function(){
+  	// bootstrap App
+    angular.bootstrap(document.body, ['watcherApp']);
+  });
+
+  // init App
+  initApp();
 
   function initApp(){
-    // bootstrap
-    angular.bootstrap(document.body, ['watcherApp']);
-
     // set module
     window.watcherApp = window.watcherApp || angular.module('watcherApp', [], function($locationProvider, $interpolateProvider){
       $locationProvider.html5Mode(true);

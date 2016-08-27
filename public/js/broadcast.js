@@ -1,12 +1,15 @@
 /**/
 /**/
 (function($){
-  angular.element(document.body).ready(initApp);
+  angular.element(document.body).ready(function(){
+    // bootstrap App
+    angular.bootstrap(document.body, ['broadcastApp']);
+  });
+
+  // init App
+  initApp();
 
   function initApp(){
-    // bootstrap
-    angular.bootstrap(document.body, ['broadcastApp']);
-
     // set module
     window.broadcastApp = window.broadcastApp || angular.module('broadcastApp', [], function($locationProvider, $interpolateProvider){
       $locationProvider.html5Mode(true);

@@ -1,10 +1,14 @@
 /**/
 (function($){
-  angular.element(document.body).ready(initApp);
+  angular.element(document.body).ready(function(){
+    // bootstrap App
+    angular.bootstrap(document.body, ['indexApp']);
+  });
+
+  // init App
+  initApp();
 
   function initApp(){
-    // bootstrap
-    angular.bootstrap(document.body, ['indexApp']);
 
     // set module
     window.indexApp = window.indexApp || angular.module('indexApp', [], function($locationProvider, $interpolateProvider){
