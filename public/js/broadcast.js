@@ -20,16 +20,27 @@
     window.broadcastApp.value('APP_VALUES', {
       EMAIL: 'gogistics@gogistics-tw.com',
       MEDIA_CONFIG: {audio: true,
-                     video: true},
+                     video: {optional: [{sourceId: "X978DoubangoTelecomScreenCapturer785"}]}},
       LOCAL_STREAM: null
     });
 
     window.broadcastApp.config(function(){
-      //
+      // routing config
     });
 
     window.broadcastApp.run(function(){
-      //
+      // set up connection with binaryjs-server
+      window.binaryClient = window.binaryClient || new BinaryClient('ws://45.79.106.150:8888');
+      window.binaryClient.on('open', function(stream) {
+        console.log(stream);
+        // for the sake of this example let's put the stream in the window
+        window.myBinaryStream = window.binaryClient.createStream({from: 'broadcast'});
+
+        // receive data
+        window.myBinaryStream.on('data', function(data){
+          console.log(data);
+        });
+      });
     });
 
     window.broadcastApp.service('dataProvider', function($http, APP_VALUES){

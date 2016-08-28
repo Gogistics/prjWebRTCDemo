@@ -27,6 +27,7 @@
     });
 
     window.watcherApp.run(function(){
+      // set up connection with binaryjs-server
       window.binaryClient = window.binaryClient || new BinaryClient('ws://45.79.106.150:8888');
       window.binaryClient.on('open', function(stream) {
         console.log(stream);
