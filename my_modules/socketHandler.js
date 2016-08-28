@@ -19,7 +19,7 @@ module.exports = function(io, streams) {
       });
 
       // send notification to all users when new stream coming; notify user-self & need to notify other users
-      // client.emit('stream_notification', 'stream_on')
+      // client.emit('streamNotification', 'stream_on')
       notifyUsersWithUpdateStreamsInfo('stream_on', client.id);
     });
     
@@ -47,7 +47,7 @@ module.exports = function(io, streams) {
       });
 
       // send notification to all users when stream leaves
-      // client.emit('stream_notification', 'stream_off');
+      // client.emit('streamNotification', 'stream_off');
       notifyUsersWithUpdateStreamsInfo('stream_off', client.id);
     }
 
@@ -59,7 +59,7 @@ module.exports = function(io, streams) {
       }
       for(var key in clients){
         console.log('socket-key: ' + key);
-        clients[key].emit('stream_notification', { notification_key: arg_notification_key, client_id_from: arg_client_id_from });
+        clients[key].emit('streamNotification', { notification_key: arg_notification_key, client_id_from: arg_client_id_from });
       }
     }
 

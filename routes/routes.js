@@ -7,23 +7,23 @@ module.exports = function(app, streams) {
   };
 
   var watcher = function(req, res){
-    var params = { ttile: 'Watcher'};
+    var params = { ttile: 'Watcher', user_type: 'watcher'};
     res.render('watcher.jade', params);
   }
 
   var broadcast = function(req, res){
-    var params = { ttile: 'Broadcast', user_type: 'regular_watcher'};
+    var params = { ttile: 'Broadcast', user_type: 'broadcast'};
     res.render('broadcast.jade', params);
   }
 
   // GET streams as JSON
   var getStreams = function(req, res){
-    var user_type = req.params.user_type || 'watcher';
+    var user_type = req.body.user_type || 'broadcast';
     streams.getStreams(user_type, function(err, docs){
       if(!err){
-        res.send(docs);
+        res.status(200).json({broadcastStreams: docs});
       }else{
-        res.send([]);
+        res.status(500).json([]);
       }
     });
   };
@@ -38,5 +38,5 @@ module.exports = function(app, streams) {
   app.get('/broadcast', broadcast);
 
   // get stream info. in JSON
-  app.get('/streams', getStreams);
+  app.post('/streams', getStreams);
 }

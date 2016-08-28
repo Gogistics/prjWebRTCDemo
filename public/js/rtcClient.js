@@ -27,10 +27,10 @@ var PeerManager = (function () {
       },
       peerDatabase = {}, // can be replaced with real DB
       localStream,
-      remote_streams_db = {}, // for storing remote streams and do recording if necessary
+      remoteStreamsDB = {}, // for storing remote streams and do recording if necessary
       remoteVideoContainer = document.getElementById('remoteVideosContainer'),
       socket = io(),
-      external_mechanism = {};
+      externalMechanisms = {};
       
   // set socket
   socket.on('message', handleMessage);
@@ -39,9 +39,9 @@ var PeerManager = (function () {
   });
 
   // auto-update mechanism (beta)
-  socket.on('stream_notification', function(res){
+  socket.on('streamNotification', function(res){
     console.log(res);
-    if(external_mechanism.hasOwnProperty('load_data')){
+    if(externalMechanisms.hasOwnProperty('load_data')){
       // if remote tream off, remove stream
       if(res.notification_key === 'stream_off'){
         var remote_id = res.client_id_from,
@@ -57,8 +57,8 @@ var PeerManager = (function () {
         }
       }
       // load data
-      external_mechanism.load_data();
-      console.log('stream_notification: update stream list...');
+      externalMechanisms.load_data();
+      console.log('streamNotification: update stream list...');
     }
   });
   // end of auto-update mechanism
@@ -79,7 +79,7 @@ var PeerManager = (function () {
       // recording mechanism could be assigned here
       attachMediaStream(peer.remoteVideoEl, event.stream);
       remoteVideosContainer.appendChild(peer.remoteVideoDiv);
-      remote_streams_db[peer.remoteVideoEl.id] = event.stream;
+      remoteStreamsDB[peer.remoteVideoEl.id] = event.stream;
     };
     peer.pc.onremovestream = function(event) {
       // remove child element
@@ -252,13 +252,13 @@ var PeerManager = (function () {
       socket.emit(type, payload);
     },
     // load_data mechanism (temp)
-    add_external_mechanism: function(arg_mechanism_name, arg_mechanism){
+    addExternalMechanism: function(arg_mechanism_name, arg_mechanism){
       // set external mechanism
-      external_mechanism[arg_mechanism_name] = arg_mechanism;
+      externalMechanisms[arg_mechanism_name] = arg_mechanism;
     },
     // to start and stop recording for remote streams
-    get_remote_streams_db: function(){
-      return remote_streams_db;
+    getRemoteStreamsDB: function(){
+      return remoteStreamsDB;
     }
   };
 });
@@ -277,19 +277,19 @@ var Peer = function (pcConfig, pcConstraints, arg_remote_id){
   this.remoteVideoEl.id = arg_remote_id; // to set the remote id for future use
 
   //
-  this.start_recording_btn = document.createElement('input'),
-  this.stop_recording_btn = document.createElement('input');
+  this.startRecordingBtn = document.createElement('input'),
+  this.stopRecordingBtn = document.createElement('input');
 
-  this.start_recording_btn.setAttribute('type', 'button');
-  this.stop_recording_btn.setAttribute('type', 'button');
+  this.startRecordingBtn.setAttribute('type', 'button');
+  this.stopRecordingBtn.setAttribute('type', 'button');
 
-  this.start_recording_btn.className = 'col-sm-6 col-xs-12 btn btn-default';
-  this.stop_recording_btn.className = 'col-sm-6 col-xs-12 btn btn-default';
+  this.startRecordingBtn.className = 'col-sm-6 col-xs-12 btn btn-default';
+  this.stopRecordingBtn.className = 'col-sm-6 col-xs-12 btn btn-default';
 
-  this.start_recording_btn.setAttribute('value', 'Start Recording');
-  this.stop_recording_btn.setAttribute('value', 'Stop Recording');
+  this.startRecordingBtn.setAttribute('value', 'Start Recording');
+  this.stopRecordingBtn.setAttribute('value', 'Stop Recording');
 
-  this.stop_recording_btn.setAttribute('disabled', true);
+  this.stopRecordingBtn.setAttribute('disabled', true);
 
   // create remote video div
   this.remoteVideoDiv = document.createElement('div');
@@ -298,6 +298,6 @@ var Peer = function (pcConfig, pcConstraints, arg_remote_id){
   this.remoteVideoDiv.appendChild(document.createElement('hr'));
   this.remoteVideoDiv.appendChild(this.remoteVideoEl);
   this.remoteVideoDiv.appendChild(document.createElement('br'));
-  this.remoteVideoDiv.appendChild(this.start_recording_btn);
-  this.remoteVideoDiv.appendChild(this.stop_recording_btn);
+  this.remoteVideoDiv.appendChild(this.startRecordingBtn);
+  this.remoteVideoDiv.appendChild(this.stopRecordingBtn);
 }

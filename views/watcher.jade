@@ -7,7 +7,27 @@ block css_block
 block content
   div(ng-controller="watcherCtrl as ctrl")
     div(class="container text-center")
-      h3 Hello Watcher
+      div(class="col-xs-12")
+        div(class="col-xs-12")
+          h3 Remote Broadcasters List
+          input(type="button" class="btn btn-default" value="Refresh" ng-click="remoteStreamCtrl.loadData()")
+        // list and videos container
+        br
+        div(class="col-sm-3 col-xs-12")
+          table
+            thead
+              tr
+                th Stream
+                th 1-Way
+            tbody
+              tr(ng-repeat="stream in ctrl.broadcastStreams track by $index")
+                td
+                  span {{stream.name}}
+                td
+                  a(href="#" ng-class="{ 'selected': stream.isPlaying }" ng-click="ctrl.view(stream)") [[ stream.isPlaying ? 'Cancel' : 'View' ]]
+
+        div(class="col-sm-9 col-xs-12")
+          div(id="remoteVideosContainer")
 
 block js_block
   // for IE 11 or browser is not IE

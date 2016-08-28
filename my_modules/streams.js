@@ -82,11 +82,11 @@ module.exports = function() {
     // get stream list; may be unnecessary for using cloud db
     getStreams : function(arg_user_type, callback) {
       if(arg_user_type === 'watcher' || arg_user_type === 'broadcast'){
-        socketCollection.find({user_type: arg_user_type}).toArray(function(err, docs){
+        socketCollection.find({user_type: arg_user_type}).sort({id: 1}).toArray(function(err, docs){
           callback(err, docs);
         });
       }else{
-        callback('invalid user type', {});
+        callback('invalid user type', []);
       };
     }
   }
