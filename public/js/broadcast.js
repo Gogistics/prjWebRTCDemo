@@ -1,5 +1,4 @@
 /**/
-/**/
 (function($){
   angular.element(document).ready(function(){
     // bootstrap App
@@ -21,16 +20,7 @@
     window.broadcastApp.value('APP_VALUES', {
       EMAIL: 'gogistics@gogistics-tw.com',
       MEDIA_CONFIG: {audio: true,
-              video: { mandatory: {
-                    minWidth: 1280,
-                    minHeight: 720,
-                    maxWidth: 1280,
-                    maxHeight: 720,
-                    frameRate: { min: 35, ideal: 50, max: 60 },
-                  },
-                  optional: [{sourceId: "X978DoubangoTelecomScreenCapturer785"}]
-              }
-          },
+                     video: true},
       LOCAL_STREAM: null
     });
 
@@ -119,6 +109,7 @@
           camera.stop().then(function(result){
             client.send('leave');
             client.setLocalStream(null);
+            $window.location.reload();
           }).catch(function(err){
             console.log(err);
           });

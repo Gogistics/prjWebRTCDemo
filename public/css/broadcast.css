@@ -1,4 +1,7 @@
 /**/
+html,body{
+  height: 100%;
+}
 .is_recording{
   -webkit-animation: shadow_alert 3s inifite;
   -moz-animation: shadow_alert 3s inifite;
@@ -6,4 +9,7 @@
 }
 .is_not_recording{
   box-shadow: 0px 0px 0px;
+}
+.video_container{
+  height: 100%;
 }

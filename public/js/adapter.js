@@ -484,7 +484,8 @@ function requestUserMedia(constraints) {
       reject(error);
     };
     try {
-      getUserMedia(constraints, onSuccess, onError);
+      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+      navigator.getUserMedia(constraints, onSuccess, onError);
     } catch (e) {
       reject(e);
     }

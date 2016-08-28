@@ -5,13 +5,13 @@ block css_block
   link(href='/public/css/broadcast.min.css' type='text/css' rel='stylesheet')
 
 block content
-  div(ng-controller="broadcastCtrl as ctrl" ng-init="ctrl.init('#{user_type}')")
+  div(ng-controller="broadcastCtrl as ctrl" ng-init="ctrl.init('#{user_type}')" class="video_container")
     div(class="container text-center")
       br
       input(class="btn btn-secondary" type="button" ng-click="ctrl.toggleCam()" value="[[ ctrl.cameraIsOn ? 'Stop' : 'Start' ]]")
       hr
       div(class="col-lg-12")
-        video(id="localVideo" class="col-xs-12" ng-class="ctrl.isStartRecordingBtnDisabled ? 'is_recording' : 'is_not_recording' " muted="muted" autoplay="true")
+        video(id="localVideo" class="col-xs-12" ng-class="ctrl.isStartRecordingBtnDisabled ? 'is_recording' : 'is_not_recording' " muted="muted")
 
 block js_block
   // for IE 11 or browser is not IE
