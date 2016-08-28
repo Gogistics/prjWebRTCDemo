@@ -14,6 +14,8 @@ module.exports = function(io, streams) {
     client.on('readyToStream', function(options) {
       console.log('-- ' + client.id + ' is ready to stream --');
       var user_ip = client.request.connection.remoteAddress || 'NA';
+
+      console.log(options);
       streams.addStream(client.id, options.name, options.user_type, user_ip, function(err, doc){
         if(err) console.log(err);
       });
@@ -40,9 +42,9 @@ module.exports = function(io, streams) {
       client_to.emit('serviceNotification', arg_details);
     });
 
-    function leave(arg_type) {
+    function leave(arg_info) {
       console.log('-- ' + client.id + ' left --');
-      streams.removeStream(client.id, arg_type, function(err, result){
+      streams.removeStream(client.id, function(err, result){
         if(err) console.log(result);
       });
 

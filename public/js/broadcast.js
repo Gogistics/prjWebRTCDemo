@@ -107,7 +107,7 @@
       ctrl.toggleCam = function(){
         if(ctrl.cameraIsOn){
           camera.stop().then(function(result){
-            client.send('leave');
+            client.send('leave', {name: ctrl['name'], user_type: 'broadcast'});
             client.setLocalStream(null);
             $window.location.reload();
           }).catch(function(err){
@@ -117,7 +117,7 @@
           console.log('start camera...');
           camera.start().then(function(result){
             ctrl.link = $window.location.host + '/' + client.getId();
-            client.send('readyToStream', {name: ctrl.name, user_type: ctrl.userType});
+            client.send('readyToStream', {name: ctrl['name'], user_type: ctrl['userType']});
           });
         }
       }

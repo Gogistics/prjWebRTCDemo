@@ -29,12 +29,12 @@
     window.watcherApp.run(function(){
       window.binaryClient = window.binaryClient || new BinaryClient('ws://45.79.106.150:8888');
       window.binaryClient.on('open', function(stream) {
-      console.log(stream);
+        console.log(stream);
         // for the sake of this example let's put the stream in the window
-        window.my_binary_stream = window.binaryClient.createStream({from: 'watcher'});
+        window.myBinaryStream = window.binaryClient.createStream({from: 'watcher'});
 
         // receive data
-        window.my_binary_stream.on('data', function(data){
+        window.myBinaryStream.on('data', function(data){
           console.log(data);
         });
       });

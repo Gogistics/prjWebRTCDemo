@@ -18,11 +18,11 @@ block content
             thead
               tr
                 th Stream
-                th 1-Way
+                th 1-Way (View Only)
             tbody
               tr(ng-repeat="stream in ctrl.broadcastStreams track by $index")
                 td
-                  span {{stream.name}}
+                  span [[stream.name]]
                 td
                   a(href="#" ng-class="{ 'selected': stream.isPlaying }" ng-click="ctrl.view(stream)") [[ stream.isPlaying ? 'Cancel' : 'View' ]]
 

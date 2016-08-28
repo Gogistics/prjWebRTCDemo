@@ -41,8 +41,8 @@ module.exports = function() {
     addStream : function(arg_id, arg_name, arg_user_type, arg_user_ip, callback) {
       if(arg_user_type === 'watcher' || arg_user_type === 'broadcast'){
         var time_log_in = new Date(),
-            stream = new WebRTCStream(id, name, arg_user_type, user_ip, time_log_in);
-
+            stream = new WebRTCStream(arg_id, arg_name, arg_user_type, arg_user_ip, time_log_in);
+        console.log(stream);
         socketCollection.findAndModify(
           { id: stream.id },
           [['id', 1]],
@@ -57,15 +57,11 @@ module.exports = function() {
     },
 
     // remove stream
-    removeStream : function(arg_id, arg_user_type, callback) {
+    removeStream : function(arg_id, callback) {
       // update collection of stream log
-      if(arg_user_type === 'watcher' || arg_user_type === 'broadcast'){
-        socketCollection.deleteOne({ id : arg_id }, function(err, result) {
-          callback(err, result);
-        });
-      }else{
-        callback('invalid user type', {});
-      };
+      socketCollection.deleteOne({ id : arg_id }, function(err, result) {
+        callback(err, result);
+      });
     },
 
     // update function
