@@ -1113,4 +1113,26 @@ if (navigator.mozGetUserMedia) {
     AdapterJS.WebRTCPlugin.pluginNeededButNotInstalledCb);
 }
 
-
+/* customized function not in original adapter.js */
+// Returns the result of getUserMedia as a Promise.
+function requestUserMedia(constraints) {
+  return new Promise(function(resolve, reject) {
+    var onSuccess = function(stream) {
+      resolve(stream);
+      /* recording mechanism is created here */
+    };
+    var onError = function(error) {
+      reject(error);
+    };
+    try {
+      AdapterJS.webRTCReady(function(isUsingPlugin) {
+          // The WebRTC API is ready.
+          // isUsingPlugin: true if the WebRTC plugin is being used, false otherwise
+        
+          getUserMedia(constraints, onSuccess, onError);
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
