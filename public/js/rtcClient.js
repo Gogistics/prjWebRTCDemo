@@ -190,24 +190,35 @@ var PeerManager = (function () {
         offer(from);
         break;
       case 'offer':
-        // new RTCSessionDescription(message.payload)
         console.log(message);
-        pc.setRemoteDescription(new RTCSessionDescription(message.payload), function(){}, error);
+        if (!!message.payload) pc.setRemoteDescription(new RTCSessionDescription(message.payload)).then(function(){ console.log('successfully receive offer'); }).catch(error);
         answer(from);
         break;
       case 'answer':
-        // new RTCSessionDescription(message.payload)
-        pc.setRemoteDescription(new RTCSessionDescription(message.payload), function(){}, error);
+        if (!!message.payload) pc.setRemoteDescription(new RTCSessionDescription(message.payload)).then(function(){ console.log('successfully receive offer'); }).catch(error);
         break;
       case 'candidate':
-        if(pc.remoteDescription) {
+        /* if(pc.remoteDescription) {
           console.log(message.payload);
+
           pc.addIceCandidate(new RTCIceCandidate({
             sdpMLineIndex: message.payload.label,
             sdpMid: message.payload.id,
             candidate: message.payload.candidate
-          }), function(){}, error);
+          })).then(function(){}).catch(error); */
+
+        if( pc.remoteDescription || (!pc.remoteDescription && !!message.payload) ){
+          console.log('<--candidate-->');
+          console.log(pc);
+          console.log(message);
+          pc.setRemoteDescription(new RTCSessionDescription(message.payload)).then(function(){ console.log('successfully set remote description for candidate'); }).catch(error);
+
+          pc.addIceCandidate(new RTCIceCandidate({
+            sdpMLineIndex: message.payload.label,
+            sdpMid: message.payload.id,
+            candidate: message.payload.candidate})).then(function(){ console.log('successfully add icecandidate'); }).catch(error);
         }
+
         break;
     }
   }
@@ -216,6 +227,7 @@ var PeerManager = (function () {
   // send
   function send(type, to, payload) {
     console.log('sending ' + type + ' to ' + to);
+    console.log(payload);
     socket.emit('message', {
       to: to,
       type: type,
