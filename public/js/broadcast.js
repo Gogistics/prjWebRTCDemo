@@ -20,7 +20,7 @@
     window.broadcastApp.value('APP_VALUES', {
       EMAIL: 'gogistics@gogistics-tw.com',
       MEDIA_CONFIG: {audio: true,
-                     video: {optional: [{sourceId: "X978DoubangoTelecomScreenCapturer785"}]}},
+                     video: true},
       LOCAL_STREAM: null
     });
 

@@ -89,7 +89,9 @@
       client.addExternalMechanism('load_data', ctrl.loadData);
 
       ctrl.view = function(arg_stream){
+        if(!arg_stream.isPlaying){
         var remotePeer = client.peerInit(arg_stream['id']);
+        // client.peerRenegociate(arg_stream['id']);
         remotePeer.startRecordingBtn.addEventListener('click', function(){
           ctrl.startTimestamp = new Date().getTime();
           ctrl.rtcRecorder = RecordRTC(ctrl.remoteStreamsDB[remotePeer.remoteVideoEl.id], {bufferSize: 16384, type: 'video', frameInterval: 20});
@@ -108,6 +110,11 @@
           ctrl.rtcRecorder.save(fileName);
         });
         arg_stream.isPlaying = !arg_stream.isPlaying;
+        }else{
+          console.log('remove remote stream...');
+          client.removeStream(arg_stream['id']);
+          arg_stream.isPlaying = !arg_stream.isPlaying;
+        }
       };
       ctrl.loadData();
     }]);

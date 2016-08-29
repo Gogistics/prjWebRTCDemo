@@ -1,6 +1,6 @@
 # WebRTC Tutorial
 
-Demo 1. Broadcasting with recording mechanism
+Demo 1. Broadcasting with recording mechanism (Chrome/Firefox)
 
 More demos coming soon...
 

@@ -1,13 +1,3 @@
-var Plugin = {};
-window.onPluginRTCInitialized = function(pluginRTCObject) {
-    Plugin = pluginRTCObject;
-    MediaStreamTrack      = Plugin.MediaStreamTrack;
-    RTCPeerConnection     = Plugin.RTCPeerConnection;
-    RTCIceCandidate       = Plugin.RTCIceCandidate;
-    RTCSessionDescription = Plugin.RTCSessionDescription;
-};
-if (!!window.PluginRTC) window.onPluginRTCInitialized(window.PluginRTC);
-
 var PeerManager = (function () {
   // init socket manager
   var local_id,
@@ -149,13 +139,13 @@ var PeerManager = (function () {
   // answer
   function answer(remoteId) {
     var pc = peerDatabase[remoteId].pc;
+
     pc.createAnswer(
       function(sessionDescription) {
         pc.setLocalDescription(sessionDescription);
         send('answer', remoteId, sessionDescription);
       }, 
-      error
-    );
+      error, setSdpConstraints());
   }
   // end of answer
 
@@ -167,10 +157,25 @@ var PeerManager = (function () {
         pc.setLocalDescription(sessionDescription);
         send('offer', remoteId, sessionDescription);
       }, 
-      error
-    );
+      error, setSdpConstraints());
   }
   // end of offer
+
+  // set SDP constraints
+  function setSdpConstraints() {
+    return !!navigator.mozGetUserMedia ?
+    {
+        offerToReceiveAudio: 1,
+        offerToReceiveVideo: 1
+    } :
+    {
+        optional: [],
+        mandatory: {
+            OfferToReceiveAudio: true,
+            OfferToReceiveVideo: true
+        }
+    };
+  }
 
   // handleMessage
   function handleMessage(message) {
@@ -185,10 +190,13 @@ var PeerManager = (function () {
         offer(from);
         break;
       case 'offer':
+        // new RTCSessionDescription(message.payload)
+        console.log(message);
         pc.setRemoteDescription(new RTCSessionDescription(message.payload), function(){}, error);
         answer(from);
         break;
       case 'answer':
+        // new RTCSessionDescription(message.payload)
         pc.setRemoteDescription(new RTCSessionDescription(message.payload), function(){}, error);
         break;
       case 'candidate':
@@ -261,6 +269,10 @@ var PeerManager = (function () {
     },
     send: function(type, payload) {
       socket.emit(type, payload);
+    },
+    removeStream: function(remoteId){
+      peer = peerDatabase[remoteId];
+      send('init', remoteId, null);
     },
     // load_data mechanism (temp)
     addExternalMechanism: function(arg_mechanism_name, arg_mechanism){
