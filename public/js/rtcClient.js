@@ -183,6 +183,7 @@ var PeerManager = (function () {
         break;
       case 'candidate':
         if(pc.remoteDescription) {
+          console.log(message.payload);
           pc.addIceCandidate(new RTCIceCandidate({
             sdpMLineIndex: message.payload.label,
             sdpMid: message.payload.id,
