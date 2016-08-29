@@ -1,3 +1,13 @@
+var Plugin = {};
+window.onPluginRTCInitialized = function(pluginRTCObject) {
+    Plugin = pluginRTCObject;
+    MediaStreamTrack      = Plugin.MediaStreamTrack;
+    RTCPeerConnection     = Plugin.RTCPeerConnection;
+    RTCIceCandidate       = Plugin.RTCIceCandidate;
+    RTCSessionDescription = Plugin.RTCSessionDescription;
+};
+if (!!window.PluginRTC) window.onPluginRTCInitialized(window.PluginRTC);
+
 var PeerManager = (function () {
   // init socket manager
   var local_id,
