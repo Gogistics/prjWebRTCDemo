@@ -6,15 +6,17 @@ How WebRTC works?
 
 Demo 1. Broadcasting with recording mechanism (Chrome/Firefox)
 
-  1-1. Initiate a Node.js project; pleasee see package.json as the reference of required modules
+  1-1. **Initiate a Node.js project:**
+
+  		See package.json as the reference of required modules
 
   1-2. **Back-end Development:** 
 
-    Get **streams** and **socketHandler** ready, before creating a server.js; **streams** handles the stream information and conmmunication with the database which is MongoDB in our case, and **socketHandler** handles the communication  between **streams** and socket.io
+    	Get streams.js and socketHandler.js ready, before creating a server.js; streams handles the stream information and conmmunication with the database which is MongoDB in our case, and socketHandler.js handles the communication  between streams.js and socket.io
 
   1-3. **Front-end Development:**
 
-  	Start to construct the front-end architecture built with angular.js, socket.io-client, WebRTC adapter.js, and rtcClient.js; angular.js is used to construct front-end MVC architecture, socket.io-client is used to handle the socket comminucation between front-end and back-end, adapter.js is an interface to handle RTC Peer, rtcClient.js is used to create a PeerManager to handle the communication between WebRTC adapter and front-end application which is built with angular.js
+  		Start to construct the front-end architecture built with angular.js, socket.io-client, WebRTC adapter.js, and rtcClient.js; angular.js is used to construct front-end MVC architecture, socket.io-client is used to handle the socket comminucation between front-end and back-end, adapter.js is an interface to handle RTC Peer, rtcClient.js is used to create a PeerManager to handle the communication between WebRTC adapter and front-end application which is built with angular.js
 
   1-4. **Put all together**
 
@@ -44,7 +46,7 @@ Ref.-
 
 [MediaStreamer](https://github.com/muaz-khan/WebRTC-Experiment/blob/master/Pre-recorded-Media-Streaming/MediaStreamer.js)
 
-[Video Processing Experiments with OpenCV and WebRTC (I feel like maybe WebRTC can be used to do something similar to the project of Commma.ai)](https://github.com/concord-consortium/video-processing-experiments)
+[Video Processing Experiments with OpenCV and WebRTC (WebRTC could be used to do something similar to the project of Commma.ai)](https://github.com/concord-consortium/video-processing-experiments)
 
 Issues-
 
