@@ -184,13 +184,13 @@ var PeerManager = (function () {
         pc = (peerDatabase[from] || addPeer(from)).pc;
 
     console.log('received ' + type + ' from ' + from);
+    console.log(message);
     switch (type) {
       case 'init':
         toggleLocalStream(pc);
         offer(from);
         break;
       case 'offer':
-        console.log(message);
         if (!!message.payload) pc.setRemoteDescription(new RTCSessionDescription(message.payload)).then(function(){ console.log('successfully receive offer'); }).catch(error);
         answer(from);
         break;
@@ -198,16 +198,15 @@ var PeerManager = (function () {
         if (!!message.payload) pc.setRemoteDescription(new RTCSessionDescription(message.payload)).then(function(){ console.log('successfully receive offer'); }).catch(error);
         break;
       case 'candidate':
-        /* if(pc.remoteDescription) {
-          console.log(message.payload);
-
+        if(pc.remoteDescription) {
           pc.addIceCandidate(new RTCIceCandidate({
             sdpMLineIndex: message.payload.label,
             sdpMid: message.payload.id,
             candidate: message.payload.candidate
-          })).then(function(){}).catch(error); */
+          })).then(function(){}).catch(error);
 
-        if( pc.remoteDescription || (!pc.remoteDescription && !!message.payload) ){
+        /*
+        if( !pc.remoteDescription && !!message.payload ){
           console.log('<--candidate-->');
           console.log(pc);
           console.log(message);
@@ -217,7 +216,7 @@ var PeerManager = (function () {
             sdpMLineIndex: message.payload.label,
             sdpMid: message.payload.id,
             candidate: message.payload.candidate})).then(function(){ console.log('successfully add icecandidate'); }).catch(error);
-        }
+        } */
 
         break;
     }
@@ -242,7 +241,11 @@ var PeerManager = (function () {
       (!!pc.getLocalStreams().length) ? pc.removeStream(localStream) : pc.addStream(localStream);
     }
   }
-  // end of toogleLocalStream
+
+  // remove stream
+  function removeStream(pc) {
+    if (localStream && !!pc.getLocalStreams().length) pc.removeStream(localStream);
+  }
 
   // error logger
   function error(err){
@@ -284,7 +287,8 @@ var PeerManager = (function () {
     },
     removeStream: function(remoteId){
       peer = peerDatabase[remoteId];
-      send('init', remoteId, null);
+      removeStream(peer.pc);
+      // send('init', remoteId, null); // should be removeStream()
     },
     // load_data mechanism (temp)
     addExternalMechanism: function(arg_mechanism_name, arg_mechanism){

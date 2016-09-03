@@ -19,7 +19,7 @@ const express = require('express'),
 // start app
 initApp();
 
-/* init */
+/* init the app server */
 function initApp(){
   app.set('port', process.env.PORT || 8000);
   app.set('views', path.join(__dirname, 'views'));
@@ -30,7 +30,7 @@ function initApp(){
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(methodOverride());
 
-  // set session & cookie
+  // set session & cookie; here we use Redis to handle session management
   app.use(cookieParser('C1J43I8UDHSBDC4N6SYE83W726SG4GD84JD9S7HA'));
   app.use(session({
     secret: 'C1J43I8UDHSBDC4N6SYE83W726SG4GD84JD9S7HA',
@@ -63,7 +63,7 @@ function initApp(){
     console.log('Express server listening on port: ' + app.get('port'));
   });
 
-  /* set socket handlers */
+  // set socket handlers
   var io = require('socket.io').listen(appServer); // make socket.io listen to port 8000
   require('./my_modules/socketHandler.js')(io, streams); // pass socket.io and stream into stream handler
 }
