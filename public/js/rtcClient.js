@@ -190,6 +190,10 @@ var PeerManager = (function () {
         toggleLocalStream(pc);
         offer(from);
         break;
+      case 'remove':
+        removeStream(pc);
+        offer(from);
+        break;
       case 'offer':
         if (!!message.payload) pc.setRemoteDescription(new RTCSessionDescription(message.payload)).then(function(){ console.log('successfully receive offer'); }).catch(error);
         answer(from);
@@ -204,7 +208,7 @@ var PeerManager = (function () {
             sdpMid: message.payload.id,
             candidate: message.payload.candidate
           })).then(function(){}).catch(error);
-
+        }
         /*
         if( !pc.remoteDescription && !!message.payload ){
           console.log('<--candidate-->');
@@ -287,8 +291,7 @@ var PeerManager = (function () {
     },
     removeStream: function(remoteId){
       peer = peerDatabase[remoteId];
-      removeStream(peer.pc);
-      // send('init', remoteId, null); // should be removeStream()
+      send('remove', remoteId, null); // should be removeStream(peer.pc) and send an notification to remote offer
     },
     // load_data mechanism (temp)
     addExternalMechanism: function(arg_mechanism_name, arg_mechanism){
