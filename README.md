@@ -4,6 +4,10 @@ How WebRTC works? (by Minko Gechev)
 
 ![Sequence WebRTC by Minko Gechev](http://blog.mgechev.com/images/yeoman-angular-webrtc/sequence-webrtc.png)
 
+Prerequisites:
+  
+  Web server, database, socket handler, WebRTC adapter, etc. In this demo, Node.js and Express.js are used to build the web server, nginx is used as the proxy server handling load balancing, standalone MongoDB is used as the database to store socket information, Redis is used to handle session information, socket.io is used to handle socket channel, official adapter.js is the WebRTC adapter, Angular.js is used to construct the front-end MVC architecture, and so on.
+
 Demo 1. Broadcasting with recording mechanism (Chrome/Firefox)
 
   1-1. **Initiate a Node.js project:**
@@ -20,9 +24,9 @@ Demo 1. Broadcasting with recording mechanism (Chrome/Firefox)
 
   1-4. **Put all together and start to test**
 
-  http(s)://<IP:PORT | YOUR_DOMAIN>/broadcast is for broadcasting real-time video streams
+  http(s)://<IP:PORT or YOUR_DOMAIN>/broadcast is for broadcasting real-time video streams
 
-  http(s)://<IP:PORT | YOUR_DOMAIN>/watcher is for watching the broadcasted video streams
+  http(s)://<IP:PORT or YOUR_DOMAIN>/watcher is for watching the broadcasted video streams
 
 NOTE:
 
@@ -35,6 +39,8 @@ Ref.
 [PPT and Description for Broadcasting](https://drive.google.com/open?id=0BzeAAvM5Ha9sclY5SzJjTGMwQkk)
 
 [WebRTC Infrastructure](http://www.html5rocks.com/en/tutorials/webrtc/infrastructure/)
+
+[W3C WebRTC](https://w3c.github.io/webrtc-pc/)
 
 [Multi-User Video Conference with WebRTC](http://blog.mgechev.com/2014/12/26/multi-user-video-conference-webrtc-angularjs-yeoman/)
 
