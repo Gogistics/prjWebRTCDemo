@@ -24,9 +24,37 @@ Demo 1. Broadcasting with recording mechanism (Chrome/Firefox)
 
   1-4. **Put all together and start to test**
 
-  http(s)://<IP:PORT or YOUR_DOMAIN>/broadcast is for broadcasting real-time video streams
+  http(s)://\<IP:PORT or YOUR_DOMAIN\>/broadcast is for broadcasting real-time video streams
 
-  http(s)://<IP:PORT or YOUR_DOMAIN>/watcher is for watching the broadcasted video streams
+  http(s)://\<IP:PORT or YOUR_DOMAIN\>/watcher is for watching the broadcasted video streams
+
+    Flows:
+    
+      * General (users visit the web site)
+
+        Browser --(1. Visit Website Broadcast/Watcher)--> Web Server --(2. Handle Socket Information)--> Socket Handler --(3. Send Notification)--> Browser
+
+      * Broadcast
+
+        ng-controller --(1. Configure Media Stream)--> adapter --(2. Set Local Stream)--> rtcClient --(3. Set Camera Stream)--> camera --(Notify All Scope to Update Message on Views)--> mg-controller
+
+
+      * Watcher
+
+        ng-controller --(1. Add Remote Peer)--> rtcClient --(2. Return Remote Peer)--> ng-controller
+
+          1. Add Remote Peer
+
+            Initiate a new Peer with peerConnectionConfig and peerConnectionConstraints. If success, send an notification to others via socket that a new ICE candidate is available
+
+            Send **init** message to notify others via socket.io
+
+            Remote broadcast site receives **init** notification and then send **offer** back to watcher site
+
+            Watcher site receives **offer**, set session description, and then send **answer** back to broadcast site
+
+            Broadcast site receives **answer** and set session description
+
 
 NOTE:
 
