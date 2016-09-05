@@ -1,4 +1,5 @@
-var PeerManager = (function () {
+'use strict';
+var PeerManager = function () {
   // init socket manager
   var local_id,
       config = {
@@ -303,7 +304,7 @@ var PeerManager = (function () {
       return remoteStreamsDB;
     }
   };
-});
+};
 
 /*
 * Peer (remote)

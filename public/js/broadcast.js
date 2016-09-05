@@ -1,4 +1,4 @@
-/**/
+/* bootstrap front-end MVC architecture with Angular.js */
 (function($){
   angular.element(document).ready(function(){
     // bootstrap App
