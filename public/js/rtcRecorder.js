@@ -91,9 +91,8 @@
  */
 
 function RecordRTC(mediaStream, config) {
-    /**/
-
-    /* check media stream */
+    // MediaStream.stop() is deprecated and will soon be removed. Use MediaStreamTrack.stop() instead.
+    // check media stream
     if (!mediaStream) {
         throw 'MediaStream is mandatory.';
     }

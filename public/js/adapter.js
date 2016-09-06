@@ -43,6 +43,7 @@ attachEventListener = function (video, type, listener, useCapture) {
     video.addEventListener(type, listener, useCapture);
 }
 
+// navigator.mozGetUserMedia has been replaced by navigator.mediaDevices.getUserMedia
 if (navigator.mozGetUserMedia) {
   console.log("This appears to be Firefox");
 

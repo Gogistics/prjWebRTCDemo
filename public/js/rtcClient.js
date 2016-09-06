@@ -29,7 +29,7 @@ var PeerManager = function () {
       peerDatabase = {}, // can be replaced with real DB
       localStream,
       remoteStreamsDB = {}, // for storing remote streams and do recording if necessary
-      remoteVideoContainer = document.getElementById('remoteVideosContainer'),
+      remoteVideosContainer = document.getElementById('remoteVideosContainer'),
       socket = io(),
       externalMechanisms = {};
       
@@ -64,7 +64,7 @@ var PeerManager = function () {
   });
   // end of auto-update mechanism
 
-  // funstions
+  // add peer
   function addPeer(remoteId) {
     var peer = new Peer(config.peerConnectionConfig, config.peerConnectionConstraints, remoteId);
     peer.pc.onicecandidate = function(event) {
@@ -102,12 +102,12 @@ var PeerManager = function () {
         case 'disconnected':
           // remove child element
           try{
-            if( remoteVideosContainer.hasChildNodes() &&
+            if( remoteVideosContainer &&
+                remoteVideosContainer.hasChildNodes() &&
                 remoteVideosContainer.contains(peer.remoteVideoDiv)){
                 remoteVideosContainer.removeChild(peer.remoteVideoDiv);
             }
 
-            // remove remote stream (incomplete)
           }catch(err){
             console.log(err);
           }
@@ -115,14 +115,18 @@ var PeerManager = function () {
       }
     };
     // removeStream() to support Firefox
-    peer.pc.removeStream = function(stream) {
+    peer.pc.removeStream = function() {
       peer.pc.getSenders().forEach(function(sender){
+        console.log('<---sender at removeStream--->');
         console.log(sender);
         // incomplete; this mechanism will be triggered twice to remove video & audio tracks
         try{
           peer.pc.removeTrack(sender);
-          if( remoteVideosContainer.hasChildNodes() &&
-              remoteVideosContainer.contains(peer.remoteVideoDiv)){
+
+          // for removing video element in container
+          if( remoteVideosContainer &&
+              remoteVideosContainer.hasChildNodes() &&
+              remoteVideosContainer.contains(peer.remoteVideoDiv) ){
               remoteVideosContainer.removeChild(peer.remoteVideoDiv);
           }
         }catch(err){
@@ -243,13 +247,16 @@ var PeerManager = function () {
   // toogleLocalStream
   function toggleLocalStream(pc) {
     if(localStream) {
-      (!!pc.getLocalStreams().length) ? pc.removeStream(localStream) : pc.addStream(localStream);
+      (!!pc.getLocalStreams().length) ? pc.removeStream() : pc.addStream(localStream);
     }
   }
 
   // remove stream
   function removeStream(pc) {
-    if (localStream && !!pc.getLocalStreams().length) pc.removeStream(localStream);
+    if (localStream && !!pc.getLocalStreams().length) {
+      console.log(pc.getLocalStreams());
+      pc.removeStream();
+    }
   }
 
   // error logger
@@ -265,8 +272,8 @@ var PeerManager = function () {
     setLocalStream: function(stream) {
       // if local cam has been stopped, remove it from all outgoing streams.
       if(!stream) {
-        for(id in peerDatabase) {
-          pc = peerDatabase[id].pc;
+        for(var id in peerDatabase) {
+          var pc = peerDatabase[id].pc;
           if(!!pc.getLocalStreams().length) {
             pc.removeStream(localStream);
             offer(id);
@@ -276,11 +283,11 @@ var PeerManager = function () {
       localStream = stream;
     }, 
     toggleLocalStream: function(remoteId) {
-      peer = peerDatabase[remoteId] || addPeer(remoteId);
+      var peer = peerDatabase[remoteId] || addPeer(remoteId);
       toggleLocalStream(peer.pc);
     },
     peerInit: function(remoteId) {
-      peer = peerDatabase[remoteId] || addPeer(remoteId);
+      var peer = peerDatabase[remoteId] || addPeer(remoteId);
       send('init', remoteId, null);
       return peer;
     },
@@ -291,7 +298,8 @@ var PeerManager = function () {
       socket.emit(type, payload);
     },
     removeStream: function(remoteId){
-      peer = peerDatabase[remoteId];
+      var peer = peerDatabase[remoteId];
+      // peer.pc.close();
       send('remove', remoteId, null); // should be removeStream(peer.pc) and send an notification to remote offer
     },
     // load_data mechanism (temp)

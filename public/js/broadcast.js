@@ -80,6 +80,7 @@
       camera.stop = function(){
         return new Promise(function(resolve, reject){
           try{
+            // MediaStream.stop() is deprecated and will soon be removed. Use MediaStreamTrack.stop() instead.
             camera.stream.stop();
             camera.preview.src = '';
             resolve();
