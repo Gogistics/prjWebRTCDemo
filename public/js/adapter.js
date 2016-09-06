@@ -479,7 +479,6 @@ function requestUserMedia(constraints) {
   return new Promise(function(resolve, reject) {
     var onSuccess = function(stream) {
       resolve(stream);
-      /* recording mechanism is created here */
     };
     var onError = function(error) {
       reject(error);

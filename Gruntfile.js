@@ -34,6 +34,9 @@ module.exports = function(grunt){
         },
         combine: {
           files: {
+            'public/js/adapter.min.js': ['public/js/adapter.js'],
+            'public/js/rtcClient.min.js': ['public/js/rtcClient.js'],
+            'public/js/rtcRecorder.min.js': ['public/js/rtcRecorder.js'],
             'public/js/index.min.js': ['public/js/index.js'],
             'public/js/watcher.min.js': ['public/js/watcher.js'],
             'public/js/broadcast.min.js': ['public/js/broadcast.js']

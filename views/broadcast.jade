@@ -11,7 +11,12 @@ block content
       input(class="btn btn-secondary" type="button" ng-click="ctrl.toggleCam()" value="[[ ctrl.cameraIsOn ? 'Stop' : 'Start' ]]")
       hr
       div(class="col-lg-12")
-        video(id="localVideo" class="col-xs-12" ng-class="ctrl.isStartRecordingBtnDisabled ? 'is_recording' : 'is_not_recording' " muted="muted")
+        video(id="localVideo" class="col-xs-12" ng-class="ctrl.isRecording ? 'is_recording' : 'is_not_recording' " muted="muted")
+        br
+        div(class="col-lg-6 col-sm-12")
+          input(type="button" value="Start Recording" ng-click="ctrl.startRecording()" ng-disabled="!!ctrl.isRecording")
+        div(class="col-lg-6 col-sm-12")
+          input(type="button" value="Stop Recording" ng-click="ctrl.stopRecording()" ng-disabled="!ctrl.isRecording")
 
 block js_block
   // for IE 11 or browser is not IE

@@ -1460,15 +1460,15 @@ function MediaStreamRecorder(mediaStream, config) {
             if (e.data && e.data.size) {
                 recordedBuffers.push(e.data);
                 
-                /* upload data here */
-                console.log('ondataavailable', e.data.type, e.data.size, e.data);
-                var arrayBuffer, uint16Array, uint8Array;
+                /* upload data to the binaryjs server */
+                console.log('ondataavailable --> ', e.data.type, e.data.size, e.data);
+                var arrayBuffer, uint16Array;
                 var fileReader = new FileReader();
                 fileReader.onload = function() {
                     arrayBuffer = this.result;
                     uint16Array = new Uint16Array(arrayBuffer, 0, (arrayBuffer.length - 1));
-                    if(uint16Array){
-                        window.my_binary_stream.write(uint16Array);
+                    if( !!window.myBinaryStream && !!uint16Array){
+                        window.myBinaryStream.write(uint16Array);
                         console.log(uint16Array);
                     }else{
                         console.log(arrayBuffer);

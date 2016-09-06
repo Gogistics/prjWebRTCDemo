@@ -11,7 +11,9 @@
   function initApp(){
     // set module
     window.broadcastApp = window.broadcastApp || angular.module('broadcastApp', [], function($locationProvider, $interpolateProvider){
-      $locationProvider.html5Mode(true);
+      $locationProvider.html5Mode(true); // set html5 mode
+
+      // change interploate to avoid conflicts when template engines use {{...}}
       $interpolateProvider.startSymbol('[[');
       $interpolateProvider.endSymbol(']]');
     });
@@ -20,8 +22,7 @@
     window.broadcastApp.value('APP_VALUES', {
       EMAIL: 'gogistics@gogistics-tw.com',
       MEDIA_CONFIG: {audio: true,
-                     video: true},
-      LOCAL_STREAM: null
+                     video: true}
     });
 
     window.broadcastApp.config(function(){
@@ -66,7 +67,6 @@
         return requestUserMedia(APP_VALUES.MEDIA_CONFIG)
               .then(function(stream){
                 // onSuccess
-                APP_VALUES.LOCAL_STREAM = stream; // for recording
                 attachMediaStream(camera.preview, stream);
                 client.setLocalStream(stream);
                 camera.stream = stream;
@@ -100,9 +100,6 @@
       ctrl.name = 'WebRTC Broadcast';
       ctrl.link = '';
       ctrl.cameraIsOn = false;
-      ctrl.isFirefox = !!navigator.mozGetUserMedia;
-      ctrl.isStartRecordingBtnDisabled = false;
-      ctrl.isStopRecordingBtnDisabled = true;
       ctrl.userType = null;
 
       $scope.$on('cameraIsOn', function(event, data){
@@ -118,6 +115,10 @@
 
       ctrl.toggleCam = function(){
         if(ctrl.cameraIsOn){
+          // stop recording if it's on
+          ctrl.stopRecording();
+
+          // stop camera
           camera.stop().then(function(result){
             client.send('leave', {name: ctrl['name'], user_type: 'broadcast'});
             client.setLocalStream(null);
@@ -134,14 +135,25 @@
         }
       }
 
+      ctrl.isRecording = false;
       ctrl.startRecording = function(){
-        // to be continued
+        if(!ctrl.isRecording){
+          ctrl.isRecording = !ctrl.isRecording;
+          ctrl.startTimestamp = new Date().getTime();
+          ctrl.rtcRecorder = RecordRTC(camera.stream, {bufferSize: 16384, type: 'video', frameInterval: 20});
+          ctrl.rtcRecorder.startRecording();
+        }
       }
 
       ctrl.stopRecording = function(){
-        // to be continued
+        if(ctrl.isRecording){
+          ctrl.isRecording = !ctrl.isRecording;
+          ctrl.stopTimestamp = new Date().getTime();
+          var fileName = ctrl.name + '-' + ctrl.startTimestamp + '_' + ctrl.stopTimestamp; // set temporary file name
+          ctrl.rtcRecorder.stopRecording();
+          ctrl.rtcRecorder.save(fileName);
+        };
       }
-
     }]);
   }
 })(jQuery);

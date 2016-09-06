@@ -47,11 +47,13 @@ var PeerManager = function () {
       if(res.notification_key === 'stream_off'){
         var remote_id = res.client_id_from,
             peer = peerDatabase[remote_id];
-        // remove child element
+
+        // remove child element; not necessary for broadcast
         try{
-          if( remoteVideosContainer.hasChildNodes() &&
-              remoteVideosContainer.contains(peer.remoteVideoDiv)){
-              remoteVideosContainer.removeChild(peer.remoteVideoDiv);
+          if( remoteVideosContainer &&
+              remoteVideosContainer.hasChildNodes() &&
+              remoteVideosContainer.contains(peer.remoteVideosDiv)){
+              remoteVideosContainer.removeChild(peer.remoteVideosDiv);
           }
         }catch(err){
           console.log(err);
@@ -79,15 +81,15 @@ var PeerManager = function () {
     peer.pc.onaddstream = function(event) {
       // recording mechanism could be assigned here
       attachMediaStream(peer.remoteVideoEl, event.stream);
-      remoteVideosContainer.appendChild(peer.remoteVideoDiv);
+      remoteVideosContainer.appendChild(peer.remoteVideosDiv);
       remoteStreamsDB[peer.remoteVideoEl.id] = event.stream;
     };
     peer.pc.onremovestream = function(event) {
       // remove child element
       try{
         if( remoteVideosContainer.hasChildNodes() &&
-          remoteVideosContainer.contains(peer.remoteVideoDiv)){
-          remoteVideosContainer.removeChild(peer.remoteVideoDiv);
+          remoteVideosContainer.contains(peer.remoteVideosDiv)){
+          remoteVideosContainer.removeChild(peer.remoteVideosDiv);
         }
         // remove remote stream (incomplete)
       }catch(err){
@@ -104,10 +106,9 @@ var PeerManager = function () {
           try{
             if( remoteVideosContainer &&
                 remoteVideosContainer.hasChildNodes() &&
-                remoteVideosContainer.contains(peer.remoteVideoDiv)){
-                remoteVideosContainer.removeChild(peer.remoteVideoDiv);
+                remoteVideosContainer.contains(peer.remoteVideosDiv)){
+                remoteVideosContainer.removeChild(peer.remoteVideosDiv);
             }
-
           }catch(err){
             console.log(err);
           }
@@ -123,11 +124,11 @@ var PeerManager = function () {
         try{
           peer.pc.removeTrack(sender);
 
-          // for removing video element in container
+          // for removing video element in container (not necessary for broadcast)
           if( remoteVideosContainer &&
               remoteVideosContainer.hasChildNodes() &&
-              remoteVideosContainer.contains(peer.remoteVideoDiv) ){
-              remoteVideosContainer.removeChild(peer.remoteVideoDiv);
+              remoteVideosContainer.contains(peer.remoteVideosDiv) ){
+              remoteVideosContainer.removeChild(peer.remoteVideosDiv);
           }
         }catch(err){
           console.log(err);
@@ -188,8 +189,10 @@ var PeerManager = function () {
         from = message.from,
         pc = (peerDatabase[from] || addPeer(from)).pc;
 
+    console.log('<---handleMessage--->');
     console.log('received ' + type + ' from ' + from);
     console.log(message);
+    console.log('<---end of handleMessage--->');
     switch (type) {
       case 'init':
         toggleLocalStream(pc);
@@ -226,7 +229,6 @@ var PeerManager = function () {
             sdpMid: message.payload.id,
             candidate: message.payload.candidate})).then(function(){ console.log('successfully add icecandidate'); }).catch(error);
         } */
-
         break;
     }
   }
@@ -234,8 +236,10 @@ var PeerManager = function () {
 
   // send
   function send(type, to, payload) {
+    console.log('<---send--->');
     console.log('sending ' + type + ' to ' + to);
     console.log(payload);
+    console.log('<---end of send--->');
     socket.emit('message', {
       to: to,
       type: type,
@@ -246,6 +250,8 @@ var PeerManager = function () {
 
   // toogleLocalStream
   function toggleLocalStream(pc) {
+    console.log('<---toggleLocalStream--->');
+    console.log(pc.getLocalStreams);
     if(localStream) {
       (!!pc.getLocalStreams().length) ? pc.removeStream() : pc.addStream(localStream);
     }
@@ -253,6 +259,7 @@ var PeerManager = function () {
 
   // remove stream
   function removeStream(pc) {
+    console.log('<---removeStream--->');
     if (localStream && !!pc.getLocalStreams().length) {
       console.log(pc.getLocalStreams());
       pc.removeStream();
@@ -270,7 +277,6 @@ var PeerManager = function () {
       return local_id;
     },
     setLocalStream: function(stream) {
-      // if local cam has been stopped, remove it from all outgoing streams.
       if(!stream) {
         for(var id in peerDatabase) {
           var pc = peerDatabase[id].pc;
@@ -343,12 +349,12 @@ var Peer = function (pcConfig, pcConstraints, arg_remote_id){
   this.stopRecordingBtn.setAttribute('disabled', true);
 
   // create remote video div
-  this.remoteVideoDiv = document.createElement('div');
-  this.remoteVideoDiv.className = 'remoteVideosDiv';
-  this.remoteVideoDiv.id = arg_remote_id; // to set the remote id for future use
-  this.remoteVideoDiv.appendChild(document.createElement('hr'));
-  this.remoteVideoDiv.appendChild(this.remoteVideoEl);
-  this.remoteVideoDiv.appendChild(document.createElement('br'));
-  this.remoteVideoDiv.appendChild(this.startRecordingBtn);
-  this.remoteVideoDiv.appendChild(this.stopRecordingBtn);
+  this.remoteVideosDiv = document.createElement('div');
+  this.remoteVideosDiv.className = 'remoteVideosDiv';
+  this.remoteVideosDiv.id = arg_remote_id; // to set the remote id for future use
+  this.remoteVideosDiv.appendChild(document.createElement('hr'));
+  this.remoteVideosDiv.appendChild(this.remoteVideoEl);
+  this.remoteVideosDiv.appendChild(document.createElement('br'));
+  this.remoteVideosDiv.appendChild(this.startRecordingBtn);
+  this.remoteVideosDiv.appendChild(this.stopRecordingBtn);
 }
