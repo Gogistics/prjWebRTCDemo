@@ -56,7 +56,7 @@ function initApp(){
 
   // set routers
   var myRouter = require('./routes/routes.js');
-  myRouter(app, streams);
+  myRouter(app, streams); // add app and streams
 
   // set port for server to listen
   var appServer = app.listen(app.get('port'), function(){

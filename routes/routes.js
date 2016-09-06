@@ -6,11 +6,13 @@ module.exports = function(app, streams) {
     res.render('index.jade', params);
   };
 
+  // GET watcher
   var watcher = function(req, res){
     var params = { ttile: 'Watcher', user_type: 'watcher'};
     res.render('watcher.jade', params);
   }
 
+  // GET broadcast
   var broadcast = function(req, res){
     var params = { ttile: 'Broadcast', user_type: 'broadcast'};
     res.render('broadcast.jade', params);

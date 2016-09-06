@@ -1,21 +1,24 @@
 module.exports = function(io, streams) {
+  // socket.io connection callback when a new user visit the website
   io.on('connection', function(client) {
     console.log('-- ' + client.id + ' joined --');
-    client.emit('id', client.id);
+    client.emit('id', client.id); // notify all users the id of new visitor
+
+    // receiver of message; socket.io message callback when new message come in
     client.on('message', function (details) {
       var otherClient = io.sockets.connected[details.to];
       if (!otherClient) return false;
       delete details.to;
-      details.from = client.id;
-      otherClient.emit('message', details);
+      details.from = client.id; // replace the id of "from" with the sender's id
+      otherClient.emit('message', details); // notify all users
     });
       
-    // receive notification when stream is ready
+    // receiver of readyToStream notification; the web server and others get notified when a new user is ready for rtc service
     client.on('readyToStream', function(options) {
       console.log('-- ' + client.id + ' is ready to stream --');
       var user_ip = client.request.connection.remoteAddress || 'NA';
 
-      console.log(options);
+      // add new info of socket stream to MongoDB when new visitor is ready
       streams.addStream(client.id, options.name, options.user_type, user_ip, function(err, doc){
         if(err) console.log(err);
       });
@@ -25,16 +28,15 @@ module.exports = function(io, streams) {
       notifyUsersWithUpdateStreamsInfo('stream_on', client.id);
     });
     
-    // update stream info.
+    // receiver of update; update the doc of MongoDB
     client.on('update', function(options) {
       streams.update(client.id, options.name, options.user_type, function(err, result){
         if(err) console.log(result);
       });
     });
 
-    // service notification
+    // receiver of service notification; notify others with news from the users
     client.on('serviceNotification', function(arg_details){
-      //
       var client_to = io.sockets.connected[arg_details.to];
       if(!client_to) return false;
       arg_details['from'] = client.id;
@@ -65,6 +67,7 @@ module.exports = function(io, streams) {
       }
     }
 
+    // disconnect and leave receiver; "disconnect" and "leave" function the same way in this tutorial
     client.on('disconnect', leave);
     client.on('leave', leave);
   });

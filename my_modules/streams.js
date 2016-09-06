@@ -1,6 +1,7 @@
 module.exports = function() {
   /*
   * MongoDB Config.
+  * In this tutorial, mongodb npm module is used to handle the communication between the server and database
   */
   var MongoClient = require('mongodb').MongoClient,
     assert = require('assert'),
@@ -15,7 +16,7 @@ module.exports = function() {
   });
 
   /*
-   * Stream object
+   * Stream classes
    */
   // root class
   var Stream = function(arg_id, arg_name, arg_user_type, arg_user_ip, arg_time_log_in) {
@@ -26,11 +27,11 @@ module.exports = function() {
     this.time_log_in = arg_time_log_in; // will be used for queue
   }
 
-  // admin Stream
+  // admin Stream inherit Stream
   var WebRTCStream = function(arg_id, arg_name, arg_user_type, arg_user_ip, arg_time_log_id){
-    //
+    // super parent class
     Stream.call(this, arg_id, arg_name, arg_user_type, arg_user_ip, arg_time_log_id);
-    this.servedWatchers = [];
+    this.servedWatchers = []; // optional
   }
   WebRTCStream.prototype = Object.create(Stream.prototype);
   WebRTCStream.prototype.constructor = WebRTCStream;
@@ -43,6 +44,8 @@ module.exports = function() {
         var time_log_in = new Date(),
             stream = new WebRTCStream(arg_id, arg_name, arg_user_type, arg_user_ip, time_log_in);
         console.log(stream);
+
+        // insert if not exist
         socketCollection.findAndModify(
           { id: stream.id },
           [['id', 1]],
@@ -58,13 +61,13 @@ module.exports = function() {
 
     // remove stream
     removeStream : function(arg_id, callback) {
-      // update collection of stream log
+      // delete doc.
       socketCollection.deleteOne({ id : arg_id }, function(err, result) {
         callback(err, result);
       });
     },
 
-    // update function
+    // update socket infor
     update : function(arg_id, arg_name, arg_user_type, callback) {
       if(arg_user_type === 'watcher' || arg_user_type === 'broadcast'){
         socketCollection.updateOne({id: arg_id}, {$set: {name: arg_name}}, function(err, result){
@@ -78,6 +81,7 @@ module.exports = function() {
     // get stream list; may be unnecessary for using cloud db
     getStreams : function(arg_user_type, callback) {
       if(arg_user_type === 'watcher' || arg_user_type === 'broadcast'){
+        // get sorted docs
         socketCollection.find({user_type: arg_user_type}).sort({id: 1}).toArray(function(err, docs){
           callback(err, docs);
         });
