@@ -1,7 +1,7 @@
 #./bin/bash
 
 # start node server
-node .
+forever start .
 
 # start binaryjs server
-node ./my_binaryjs/binaryjsServer.js
+forever start ./my_binaryjs/binaryjsServer.js
