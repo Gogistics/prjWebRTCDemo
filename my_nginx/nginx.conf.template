@@ -2,6 +2,7 @@
 worker_processes 3;
 events { worker_connections 1024; }
 
+# http config.
 http {
   # buffer setting
   client_body_buffer_size 10K;
@@ -24,9 +25,12 @@ http {
   gzip_types text/plain text/css application/json application/javascript application/x-javascript text/javascript text/xml application/xml application/rss+xml application/atom+xml application/rdf+xml;
   gzip_buffers 16 8k;
 
+  # upstream config.
   upstream node-app {
         least_conn;
-        server node_1:8080 weight=10 max_fails=3 fail_timeout=30s;
+        server 127.0.0.1:8000 weight=10 max_fails=3 fail_timeout=20s;
+        server 127.0.0.1:8001 weight=10 max_fails=3 fail_timeout=20s;
+        server 127.0.0.1:8002 weight=10 max_fails=3 fail_timeout=20s;
 
         sticky learn create=$upstream_cookie_sessionid
        	lookup=$cookie_sessionid
@@ -34,6 +38,7 @@ http {
        	timeout=1h;
   }
    
+  # server config.
   server {
         listen 80;
         location / {
@@ -47,7 +52,7 @@ http {
         }
   }
 
-  # for https
+  # for https; not used in this tutorial
   server {
     listen 443 default_server ssl;
     server_name webrtc.gogistics-tw.com;
