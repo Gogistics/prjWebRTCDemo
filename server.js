@@ -48,6 +48,7 @@ function initApp(){
 
   // set static paths
   app.use('/public', express.static( path.join(__dirname, '/public'), { maxAge: cache_time}));
+  app.use('/videos', express.static( path.join(__dirname, '/my_binaryjs/videos'), { maxAge: cache_time}));
 
   // dev. only
   if('development' === app.get('env')){
