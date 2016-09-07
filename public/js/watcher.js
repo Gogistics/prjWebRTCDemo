@@ -20,7 +20,8 @@
 
     // global values
     window.watcherApp.value('APP_VALUES', {
-      EMAIL: 'gogistics@gogistics-tw.com'
+      EMAIL: 'gogistics@gogistics-tw.com',
+      BINARY_STREAM: null
     });
 
     window.watcherApp.config(function(){
@@ -28,20 +29,7 @@
     });
 
     window.watcherApp.run(function(){
-      // set up connection with binaryjs-server
-      window.binaryClient = window.binaryClient || new BinaryClient('ws://45.79.106.150:8888');
-      window.binaryClient.on('open', function(stream) {
-        console.log('<---open of binaryClient.on--->');
-        console.log(stream);
-        // create new stream and send something to the server; you add more information this streAM
-        window.myBinaryStream = window.binaryClient.createStream({from: 'watcher'});
-
-        // receive data
-        window.myBinaryStream.on('data', function(data){
-          console.log('<---data of binaryClient.on--->');
-          console.log(data);
-        });
-      });
+      // run
     });
 
     // services of serving $http
@@ -61,12 +49,16 @@
       return new PeerManager();
     });
 
+    window.watcherApp.factory('binaryjsClient', function(){
+      return new BinaryClient('ws://45.79.106.150:8888');
+    });
+
     // watcher controller which handle everything inside watcher scope
-    window.watcherApp.controller('watcherCtrl', ['$scope', '$window', 'dataProvider', 'client', function($scope, $window, dataProvider, client){
+    window.watcherApp.controller('watcherCtrl', ['$scope', '$window', 'dataProvider', 'client', 'binaryjsClient', function($scope, $window, dataProvider, client, binaryjsClient){
       var ctrl = this;
       ctrl.broadcastStreams = [];
       ctrl.remoteStreamsDB = client.getRemoteStreamsDB();
-      ctrl.name = 'watcher';
+      ctrl.name = 'watcher' + client.getId();
 
       ctrl.getStreamById = function(arg_id){
         // use binary sort to search stream by id since the return is sorted from MongoDB
@@ -88,11 +80,6 @@
           }
           return null; // no match
         }
-
-        // old method
-        // for(var jth = 0, max = ctrl.broadcastStreams.length; jth < max; jth++){
-        //   if(ctrl.broadcastStreams[jth]['id'] === arg_id) return ctrl.broadcastStreams[jth];
-        // }
       }
 
       ctrl.loadData = function(){
@@ -125,8 +112,35 @@
           remotePeer.stopRecordingBtn.disabled = false; // switch stop btn status
           remotePeer.startRecordingBtn.disabled = true; // switch start btn status
 
+          // setting of binaryjsStream and rtcRecorder
+          binaryjsClient.on('open', function(stream) {
+            console.log(stream);
+            // for the sake of this example let's put the stream in the window
+            var from = 'watcher-' + client.getId();
+            APP_VALUES.BINARY_STREAM = binaryjsClient.createStream({from: from});
+
+            // receive data
+            APP_VALUES.BINARY_STREAM.on('data', function(data){
+              console.log(data);
+            });
+          });
           ctrl.startTimestamp = new Date().getTime();
-          ctrl.rtcRecorder = RecordRTC(ctrl.remoteStreamsDB[remotePeer.remoteVideoEl.id], {bufferSize: 16384, type: 'video', frameInterval: 20});
+          ctrl.rtcRecorder = RecordRTC( ctrl.remoteStreamsDB[remotePeer.remoteVideoEl.id],
+                                        {bufferSize: 16384, type: 'video', frameInterval: 20}, function(arg_data){
+                                          var arrayBuffer, uint16Array;
+                                          var fileReader = new FileReader();
+                                          fileReader.onload = function() {
+                                              arrayBuffer = this.result;
+                                              uint16Array = new Uint16Array(arrayBuffer, 0, (arrayBuffer.length - 1));
+                                              if( !!APP_VALUES.BINARY_STREAM && !!uint16Array){
+                                                  APP_VALUES.BINARY_STREAM.write(uint16Array);
+                                                  console.log(uint16Array);
+                                              }else{
+                                                  console.log(arrayBuffer);
+                                              }
+                                          };
+                                          fileReader.readAsArrayBuffer(arg_data);
+                                        });
           ctrl.rtcRecorder.startRecording();
         });
 
@@ -134,11 +148,12 @@
         remotePeer.stopRecordingBtn.addEventListener('click', function(){
           remotePeer.startRecordingBtn.disabled = false; // switch stop btn status
           remotePeer.stopRecordingBtn.disabled = true; // switch start btn status
+          APP_VALUES.BINARY_STREAM.end();
 
           ctrl.stopTimestamp = new Date().getTime();
           var fileName = ctrl.name + '-' + ctrl.startTimestamp + '_' + ctrl.stopTimestamp; // set temporary file name
           ctrl.rtcRecorder.stopRecording();
-          ctrl.rtcRecorder.save(fileName);
+          ctrl.rtcRecorder.save(fileName); // optional
         });
         arg_stream.isPlaying = !arg_stream.isPlaying;
         }else{

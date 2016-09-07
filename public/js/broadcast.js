@@ -22,7 +22,8 @@
     window.broadcastApp.value('APP_VALUES', {
       EMAIL: 'gogistics@gogistics-tw.com',
       MEDIA_CONFIG: {audio: true,
-                     video: true}
+                     video: true},
+      BINARY_STREAM: null
     });
 
     window.broadcastApp.config(function(){
@@ -30,18 +31,7 @@
     });
 
     window.broadcastApp.run(function(){
-      // set up connection with binaryjs-server
-      window.binaryClient = window.binaryClient || new BinaryClient('ws://45.79.106.150:8888');
-      window.binaryClient.on('open', function(stream) {
-        console.log(stream);
-        // for the sake of this example let's put the stream in the window
-        window.myBinaryStream = window.binaryClient.createStream({from: 'broadcast'});
-
-        // receive data
-        window.myBinaryStream.on('data', function(data){
-          console.log(data);
-        });
-      });
+      // run
     });
 
     window.broadcastApp.service('dataProvider', function($http, APP_VALUES){
@@ -57,6 +47,10 @@
 
     window.broadcastApp.factory('client', function(){
       return new PeerManager();
+    });
+
+    window.watcherApp.factory('binaryjsClient', function(){
+      return new BinaryClient('ws://45.79.106.150:8888');
     });
 
     window.broadcastApp.factory('camera', ['$window', '$rootScope', 'client', 'APP_VALUES', function($window, $rootScope, client, APP_VALUES){
@@ -95,9 +89,9 @@
       return camera;
     }]);
 
-    window.broadcastApp.controller('broadcastCtrl', ['$scope', '$window', 'dataProvider', 'client', 'camera', function($scope, $window, dataProvider, client, camera){
+    window.broadcastApp.controller('broadcastCtrl', ['$scope', '$window', 'dataProvider', 'client', 'binaryjsClient', 'camera', function($scope, $window, dataProvider, client, binaryjsClient, camera){
       var ctrl = this;
-      ctrl.name = 'WebRTC Broadcast';
+      ctrl.name = 'WebRTC Broadcast-' + client.getId();
       ctrl.link = '';
       ctrl.cameraIsOn = false;
       ctrl.userType = null;
@@ -139,19 +133,49 @@
       ctrl.startRecording = function(){
         if(!ctrl.isRecording){
           ctrl.isRecording = !ctrl.isRecording;
+
+          // setting of binaryjsStream and rtcRecorder
+          binaryjsClient.on('open', function(stream) {
+            console.log(stream);
+            // for the sake of this example let's put the stream in the window
+            var from = 'broadcast-' + client.getId();
+            APP_VALUES.BINARY_STREAM = binaryjsClient.createStream({from: from});
+
+            // receive data
+            APP_VALUES.BINARY_STREAM.on('data', function(data){
+              console.log(data);
+            });
+          });
           ctrl.startTimestamp = new Date().getTime();
-          ctrl.rtcRecorder = RecordRTC(camera.stream, {bufferSize: 16384, type: 'video', frameInterval: 20});
+          ctrl.rtcRecorder = RecordRTC( camera.stream,
+                                        {bufferSize: 16384, type: 'video', frameInterval: 20}, function(arg_data){
+                                          var arrayBuffer, uint16Array;
+                                          var fileReader = new FileReader();
+                                          fileReader.onload = function() {
+                                              arrayBuffer = this.result;
+                                              uint16Array = new Uint16Array(arrayBuffer, 0, (arrayBuffer.length - 1));
+                                              if( !!APP_VALUES.BINARY_STREAM && !!uint16Array){
+                                                  APP_VALUES.BINARY_STREAM.write(uint16Array);
+                                                  console.log(uint16Array);
+                                              }else{
+                                                  console.log(arrayBuffer);
+                                              }
+                                          };
+                                          fileReader.readAsArrayBuffer(arg_data);
+                                        });
           ctrl.rtcRecorder.startRecording();
         }
       }
 
       ctrl.stopRecording = function(){
         if(ctrl.isRecording){
-          ctrl.isRecording = !ctrl.isRecording;
+          ctrl.isRecording = !ctrl.isRecording; // switch btn status
+          APP_VALUES.BINARY_STREAM.end(); // end writing stream
+
           ctrl.stopTimestamp = new Date().getTime();
           var fileName = ctrl.name + '-' + ctrl.startTimestamp + '_' + ctrl.stopTimestamp; // set temporary file name
           ctrl.rtcRecorder.stopRecording();
-          ctrl.rtcRecorder.save(fileName);
+          ctrl.rtcRecorder.save(fileName); // optional
         };
       }
     }]);

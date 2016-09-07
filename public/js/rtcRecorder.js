@@ -1377,7 +1377,7 @@ if (typeof AudioContext !== 'undefined') {
  * @param {object} config - {disableLogs:true, initCallback: function, mimeType: "video/webm", onAudioProcessStarted: function}
  */
 
-function MediaStreamRecorder(mediaStream, config) {
+function MediaStreamRecorder(mediaStream, config, uploadCallback) {
     config = config || {
         bitsPerSecond: 256000,
         mimeType: 'video/webm'
@@ -1462,19 +1462,7 @@ function MediaStreamRecorder(mediaStream, config) {
                 
                 /* upload data to the binaryjs server */
                 console.log('ondataavailable --> ', e.data.type, e.data.size, e.data);
-                var arrayBuffer, uint16Array;
-                var fileReader = new FileReader();
-                fileReader.onload = function() {
-                    arrayBuffer = this.result;
-                    uint16Array = new Uint16Array(arrayBuffer, 0, (arrayBuffer.length - 1));
-                    if( !!window.myBinaryStream && !!uint16Array){
-                        window.myBinaryStream.write(uint16Array);
-                        console.log(uint16Array);
-                    }else{
-                        console.log(arrayBuffer);
-                    }
-                };
-                fileReader.readAsArrayBuffer(e.data);
+                uploadCallback(e.data);
             }
         };
 
