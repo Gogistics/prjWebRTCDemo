@@ -49,7 +49,7 @@
       return new PeerManager();
     });
 
-    window.watcherApp.factory('binaryjsClient', function(){
+    window.broadcastApp.factory('binaryjsClient', function(APP_VALUES){
       return new BinaryClient('ws://45.79.106.150:8888');
     });
 
@@ -89,7 +89,7 @@
       return camera;
     }]);
 
-    window.broadcastApp.controller('broadcastCtrl', ['$scope', '$window', 'dataProvider', 'client', 'binaryjsClient', 'camera', function($scope, $window, dataProvider, client, binaryjsClient, camera){
+    window.broadcastApp.controller('broadcastCtrl', ['$scope', '$window', 'APP_VALUES', 'dataProvider', 'client', 'binaryjsClient', 'camera', function($scope, $window, APP_VALUES, dataProvider, client, binaryjsClient, camera){
       var ctrl = this;
       ctrl.name = 'WebRTC Broadcast-' + client.getId();
       ctrl.link = '';
@@ -125,18 +125,21 @@
           camera.start().then(function(result){
             ctrl.link = $window.location.host + '/' + client.getId();
             client.send('readyToStream', {name: ctrl['name'], user_type: ctrl['userType']});
+
+            // open binaryjsStream
+            binaryjsClient.on('open', function(stream) {
+              console.log(stream);
+            });
           });
         }
       }
+
 
       ctrl.isRecording = false;
       ctrl.startRecording = function(){
         if(!ctrl.isRecording){
           ctrl.isRecording = !ctrl.isRecording;
 
-          // setting of binaryjsStream and rtcRecorder
-          binaryjsClient.on('open', function(stream) {
-            console.log(stream);
             // for the sake of this example let's put the stream in the window
             var from = 'broadcast-' + client.getId();
             APP_VALUES.BINARY_STREAM = binaryjsClient.createStream({from: from});
@@ -145,7 +148,9 @@
             APP_VALUES.BINARY_STREAM.on('data', function(data){
               console.log(data);
             });
-          });
+
+
+          // rtcRecorder
           ctrl.startTimestamp = new Date().getTime();
           ctrl.rtcRecorder = RecordRTC( camera.stream,
                                         {bufferSize: 16384, type: 'video', frameInterval: 20}, function(arg_data){

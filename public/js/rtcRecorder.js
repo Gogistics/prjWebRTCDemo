@@ -90,13 +90,13 @@
  * @param {object} config - {type:"video", disableLogs: true, numberOfAudioChannels: 1, bufferSize: 0, sampleRate: 0, video: HTMLVideoElement, etc.}
  */
 
-function RecordRTC(mediaStream, config) {
+function RecordRTC(mediaStream, config, uploadCallback) {
     // MediaStream.stop() is deprecated and will soon be removed. Use MediaStreamTrack.stop() instead.
     // check media stream
     if (!mediaStream) {
         throw 'MediaStream is mandatory.';
     }
-
+    window.binaryjsUploader = window.binaryjsUploader || uploadCallback;
     config = new RecordRTCConfiguration(mediaStream, config);
 
     // a reference to user's recordRTC object
@@ -1377,7 +1377,7 @@ if (typeof AudioContext !== 'undefined') {
  * @param {object} config - {disableLogs:true, initCallback: function, mimeType: "video/webm", onAudioProcessStarted: function}
  */
 
-function MediaStreamRecorder(mediaStream, config, uploadCallback) {
+function MediaStreamRecorder(mediaStream, config) {
     config = config || {
         bitsPerSecond: 256000,
         mimeType: 'video/webm'
@@ -1462,7 +1462,7 @@ function MediaStreamRecorder(mediaStream, config, uploadCallback) {
                 
                 /* upload data to the binaryjs server */
                 console.log('ondataavailable --> ', e.data.type, e.data.size, e.data);
-                uploadCallback(e.data);
+                window.binaryjsUploader(e.data);
             }
         };
 

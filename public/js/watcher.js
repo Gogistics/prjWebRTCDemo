@@ -103,6 +103,11 @@
       }
       client.addExternalMechanism('load_data', ctrl.loadData);
 
+      binaryjsClient.on('open', function(stream) {
+        console.log('<---binaryjsStream is open--->');
+        console.log(stream);
+      });
+
       ctrl.view = function(arg_stream){
         if(!arg_stream.isPlaying){
         var remotePeer = client.peerInit(arg_stream['id']);
@@ -113,17 +118,14 @@
           remotePeer.startRecordingBtn.disabled = true; // switch start btn status
 
           // setting of binaryjsStream and rtcRecorder
-          binaryjsClient.on('open', function(stream) {
-            console.log(stream);
-            // for the sake of this example let's put the stream in the window
-            var from = 'watcher-' + client.getId();
-            APP_VALUES.BINARY_STREAM = binaryjsClient.createStream({from: from});
+          var from = 'watcher-' + client.getId();
+          APP_VALUES.BINARY_STREAM = binaryjsClient.createStream({from: from});
 
-            // receive data
-            APP_VALUES.BINARY_STREAM.on('data', function(data){
-              console.log(data);
-            });
+          // receive data
+          APP_VALUES.BINARY_STREAM.on('data', function(data){
+            console.log(data);
           });
+
           ctrl.startTimestamp = new Date().getTime();
           ctrl.rtcRecorder = RecordRTC( ctrl.remoteStreamsDB[remotePeer.remoteVideoEl.id],
                                         {bufferSize: 16384, type: 'video', frameInterval: 20}, function(arg_data){
