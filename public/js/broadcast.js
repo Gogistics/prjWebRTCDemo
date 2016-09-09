@@ -114,6 +114,7 @@
 
           // stop camera
           camera.stop().then(function(result){
+            // send notification via socket
             client.send('leave', {name: ctrl['name'], user_type: 'broadcast'});
             client.setLocalStream(null);
             $window.location.reload();
@@ -123,6 +124,7 @@
         } else {
           console.log('start camera...');
           camera.start().then(function(result){
+            // send notification via socket
             ctrl.link = $window.location.host + '/' + client.getId();
             client.send('readyToStream', {name: ctrl['name'], user_type: ctrl['userType']});
 
@@ -133,7 +135,6 @@
           });
         }
       }
-
 
       ctrl.isRecording = false;
       ctrl.startRecording = function(){
@@ -149,11 +150,11 @@
               console.log(data);
             });
 
-
-          // rtcRecorder
+          // rtcRecorder setting
           ctrl.startTimestamp = new Date().getTime();
           ctrl.rtcRecorder = RecordRTC( camera.stream,
                                         {bufferSize: 16384, type: 'video', frameInterval: 20}, function(arg_data){
+                                          // convert stream to unit 16 array to pipe data via binary stream to cloud server
                                           var arrayBuffer, uint16Array;
                                           var fileReader = new FileReader();
                                           fileReader.onload = function() {

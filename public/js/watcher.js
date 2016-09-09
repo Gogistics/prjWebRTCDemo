@@ -103,61 +103,64 @@
       }
       client.addExternalMechanism('load_data', ctrl.loadData);
 
-      binaryjsClient.on('open', function(stream) {
-        console.log('<---binaryjsStream is open--->');
-        console.log(stream);
-      });
-
       ctrl.view = function(arg_stream){
         if(!arg_stream.isPlaying){
-        var remotePeer = client.peerInit(arg_stream['id']);
-
-        // set event listener of starting recording
-        remotePeer.startRecordingBtn.addEventListener('click', function(){
-          remotePeer.stopRecordingBtn.disabled = false; // switch stop btn status
-          remotePeer.startRecordingBtn.disabled = true; // switch start btn status
-
-          // setting of binaryjsStream and rtcRecorder
-          var from = 'watcher-' + client.getId();
-          APP_VALUES.BINARY_STREAM = binaryjsClient.createStream({from: from});
-
-          // receive data
-          APP_VALUES.BINARY_STREAM.on('data', function(data){
-            console.log(data);
+          // open up binaryjs stream
+          binaryjsClient.on('open', function(stream) {
+            console.log('<---binaryjsStream is open--->');
+            console.log(stream);
           });
 
-          ctrl.startTimestamp = new Date().getTime();
-          ctrl.rtcRecorder = RecordRTC( ctrl.remoteStreamsDB[remotePeer.remoteVideoEl.id],
-                                        {bufferSize: 16384, type: 'video', frameInterval: 20}, function(arg_data){
-                                          var arrayBuffer, uint16Array;
-                                          var fileReader = new FileReader();
-                                          fileReader.onload = function() {
-                                              arrayBuffer = this.result;
-                                              uint16Array = new Uint16Array(arrayBuffer, 0, (arrayBuffer.length - 1));
-                                              if( !!APP_VALUES.BINARY_STREAM && !!uint16Array){
-                                                  APP_VALUES.BINARY_STREAM.write(uint16Array);
-                                                  console.log(uint16Array);
-                                              }else{
-                                                  console.log(arrayBuffer);
-                                              }
-                                          };
-                                          fileReader.readAsArrayBuffer(arg_data);
-                                        });
-          ctrl.rtcRecorder.startRecording();
-        });
+          // get peer by stream id
+          var remotePeer = client.peerInit(arg_stream['id']);
+          // set event listener of starting recording
+          remotePeer.startRecordingBtn.addEventListener('click', function(){
+            remotePeer.stopRecordingBtn.disabled = false; // switch stop btn status
+            remotePeer.startRecordingBtn.disabled = true; // switch start btn status
 
-        // set event listener of stopping recording
-        remotePeer.stopRecordingBtn.addEventListener('click', function(){
-          remotePeer.startRecordingBtn.disabled = false; // switch stop btn status
-          remotePeer.stopRecordingBtn.disabled = true; // switch start btn status
-          APP_VALUES.BINARY_STREAM.end();
+            // setting of binaryjsStream and rtcRecorder
+            var from = 'watcher-' + client.getId();
+            APP_VALUES.BINARY_STREAM = binaryjsClient.createStream({from: from});
 
-          ctrl.stopTimestamp = new Date().getTime();
-          var fileName = ctrl.name + '-' + ctrl.startTimestamp + '_' + ctrl.stopTimestamp; // set temporary file name
-          ctrl.rtcRecorder.stopRecording();
-          ctrl.rtcRecorder.save(fileName); // optional
-        });
-        arg_stream.isPlaying = !arg_stream.isPlaying;
+            // receive data
+            APP_VALUES.BINARY_STREAM.on('data', function(data){
+              console.log(data);
+            });
+
+            // rtcRecorder setting
+            ctrl.startTimestamp = new Date().getTime();
+            ctrl.rtcRecorder = RecordRTC( ctrl.remoteStreamsDB[remotePeer.remoteVideoEl.id],
+                                          {bufferSize: 16384, type: 'video', frameInterval: 20}, function(arg_data){
+                                            // convert stream to unit 16 array to pipe data via binary stream to cloud server
+                                            var arrayBuffer, uint16Array;
+                                            var fileReader = new FileReader();
+                                            fileReader.onload = function() {
+                                                arrayBuffer = this.result;
+                                                uint16Array = new Uint16Array(arrayBuffer, 0, (arrayBuffer.length - 1));
+                                                if( !!APP_VALUES.BINARY_STREAM && !!uint16Array){
+                                                    APP_VALUES.BINARY_STREAM.write(uint16Array);
+                                                    console.log(uint16Array);
+                                                }else{
+                                                    console.log(arrayBuffer);
+                                                }
+                                            };
+                                            fileReader.readAsArrayBuffer(arg_data);
+                                          });
+            ctrl.rtcRecorder.startRecording();
+          });
+
+          // set event listener of stopping recording
+          remotePeer.stopRecordingBtn.addEventListener('click', function(){
+            remotePeer.startRecordingBtn.disabled = false; // switch stop btn status
+            remotePeer.stopRecordingBtn.disabled = true; // switch start btn status
+            APP_VALUES.BINARY_STREAM.end(); // end writing stream
+
+            ctrl.stopTimestamp = new Date().getTime();
+            var fileName = ctrl.name + '-' + ctrl.startTimestamp + '_' + ctrl.stopTimestamp; // set temporary file name
+            ctrl.rtcRecorder.stopRecording();
+            ctrl.rtcRecorder.save(fileName); // optional
+          });
+          arg_stream.isPlaying = !arg_stream.isPlaying;
         }else{
           console.log('remove remote stream...');
           client.removeStream(arg_stream['id']);
