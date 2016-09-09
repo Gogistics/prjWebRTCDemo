@@ -4,9 +4,20 @@ How WebRTC works? (by Minko Gechev)
 
 ![Sequence WebRTC by Minko Gechev](http://blog.mgechev.com/images/yeoman-angular-webrtc/sequence-webrtc.png)
 
-Prerequisites:
+Prerequisites of this tutorial:
   
   Web server, database, socket handler, WebRTC adapter, etc. In this demo, Node.js and Express.js are used to build the web server, nginx is used as the proxy server handling load balancing, standalone MongoDB is used as the database to store socket information, Redis is used to handle session information, socket.io is used to handle socket channel, official adapter.js is the WebRTC adapter, Angular.js is used to construct the front-end MVC architecture, and so on.
+
+Technical Terms of WebRTC:
+
+  [Network Address Translation (NAT)](https://en.wikipedia.org/wiki/Network_address_translation)
+
+  [Session Traversal Utilities for NAT (STUN)](https://tools.ietf.org/html/rfc5389)
+
+  [Traversal Using Relays around NAT (TURN): Relay Extensions to STUN](https://tools.ietf.org/html/rfc5766)
+
+  [Interactive Connectivity Establishment (ICE): A Protocol for NAT Traversal for Offer/Answer Protocols](https://tools.ietf.org/html/rfc5245)
+
 
 Demo 1. Broadcasting with recording mechanism (Chrome/Firefox)
 
@@ -70,19 +81,23 @@ Ref.
 
 [W3C WebRTC](https://w3c.github.io/webrtc-pc/)
 
-[Multi-User Video Conference with WebRTC](http://blog.mgechev.com/2014/12/26/multi-user-video-conference-webrtc-angularjs-yeoman/)
+[Symmetric NAT and It’s Problems](http://www.think-like-a-computer.com/2011/09/19/symmetric-nat/)
 
-[WebRTC-everywhere](https://github.com/sarandogou/webrtc-everywhere)
+[Multi-User Video Conference with WebRTC](http://blog.mgechev.com/2014/12/26/multi-user-video-conference-webrtc-angularjs-yeoman/)
 
 [WebRTC adapter.js](https://github.com/sarandogou/webrtc/blob/master/samples/web/js/adapter.js)
 
-[Temasys](https://temasys.atlassian.net/wiki/display/TWPP/How+to+integrate+the+Temasys+WebRTC+Plugin+into+your+website)
+[WebRTC-everywhere](https://github.com/sarandogou/webrtc-everywhere)
 
-[BinaryJS](https://github.com/binaryjs/binaryjs)
+[Temasys](https://temasys.atlassian.net/wiki/display/TWPP/How+to+integrate+the+Temasys+WebRTC+Plugin+into+your+website)
 
 [Kurento Introduction (for Java developers)](https://webrtchacks.com/kurento/)
 
 [Kurento (for Java developers)](https://www.kurento.org/)
+
+[BinaryJS API](https://github.com/binaryjs/binaryjs/blob/master/doc/api.md)
+
+[MediaRecorder](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder)
 
 [DataChannel for Beginner](https://www.webrtc-experiment.com/docs/rtc-datachannel-for-beginners.html)
 
