@@ -53,12 +53,19 @@
       return new BinaryClient('ws://45.79.106.150:8888');
     });
 
+    window.watcherApp.factory('fingerprintManager', function(){
+      return new Fingerprint();
+    });
+
     // watcher controller which handle everything inside watcher scope
-    window.watcherApp.controller('watcherCtrl', ['$scope', '$window', 'dataProvider', 'client', 'binaryjsClient', function($scope, $window, dataProvider, client, binaryjsClient){
+    window.watcherApp.controller('watcherCtrl', ['$scope', '$window', 'dataProvider', 'client', 'binaryjsClient', 'fingerprintManager', function($scope, $window, dataProvider, client, binaryjsClient, fingerprintManager){
+      // fingerprint
+      APP_VALUES.FINGERPRINT = fingerprintManager.get();
+
+      // set variables and functions of ctrl
       var ctrl = this;
       ctrl.broadcastStreams = [];
       ctrl.remoteStreamsDB = client.getRemoteStreamsDB();
-      ctrl.name = 'watcher' + client.getId();
 
       ctrl.getStreamById = function(arg_id){
         // use binary sort to search stream by id since the return is sorted from MongoDB

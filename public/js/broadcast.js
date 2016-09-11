@@ -22,8 +22,17 @@
     window.broadcastApp.value('APP_VALUES', {
       EMAIL: 'gogistics@gogistics-tw.com',
       MEDIA_CONFIG: {audio: true,
-                     video: true},
-      BINARY_STREAM: null
+                     video: { mandatory: {
+                          minWidth: 1280,
+                          minHeight: 720,
+                          maxWidth: 1280,
+                          maxHeight: 720,
+                          frameRate: { min: 35, ideal: 50, max: 60 }
+                        }
+                      }
+                    },
+      BINARY_STREAM: null,
+      FINGERPRINT: null
     });
 
     window.broadcastApp.config(function(){
@@ -51,6 +60,10 @@
 
     window.broadcastApp.factory('binaryjsClient', function(APP_VALUES){
       return new BinaryClient('ws://45.79.106.150:8888');
+    });
+
+    window.broadcastApp.factory('fingerprintManager', function(){
+      return new Fingerprint();
     });
 
     window.broadcastApp.factory('camera', ['$window', '$rootScope', 'client', 'APP_VALUES', function($window, $rootScope, client, APP_VALUES){
@@ -89,19 +102,23 @@
       return camera;
     }]);
 
-    window.broadcastApp.controller('broadcastCtrl', ['$scope', '$window', 'APP_VALUES', 'dataProvider', 'client', 'binaryjsClient', 'camera', function($scope, $window, APP_VALUES, dataProvider, client, binaryjsClient, camera){
-      var ctrl = this;
-      ctrl.name = 'WebRTC Broadcast-' + client.getId();
-      ctrl.link = '';
-      ctrl.cameraIsOn = false;
-      ctrl.userType = null;
+    window.broadcastApp.controller('broadcastCtrl', ['$scope', '$window', 'APP_VALUES', 'dataProvider', 'client', 'binaryjsClient', 'camera', 'fingerprintManager', function($scope, $window, APP_VALUES, dataProvider, client, binaryjsClient, camera, fingerprintManager){
+      // fingerprint
+      APP_VALUES.FINGERPRINT = fingerprintManager.get();
 
+      // global notification when camera is on
       $scope.$on('cameraIsOn', function(event, data){
         console.log(data);
         $scope.$apply(function(){
           ctrl.cameraIsOn = data;
         });
       });
+
+      // set variables and functions of ctrl
+      var ctrl = this;
+      ctrl.link = '';
+      ctrl.cameraIsOn = false;
+      ctrl.userType = null;
 
       ctrl.init = function(arg_user_type){
         ctrl.userType = arg_user_type;
@@ -126,6 +143,7 @@
           camera.start().then(function(result){
             // send notification via socket
             ctrl.link = $window.location.host + '/' + client.getId();
+            ctrl.name = 'WebRTC Broadcast-' + client.getId();
             client.send('readyToStream', {name: ctrl['name'], user_type: ctrl['userType']});
 
             // open binaryjsStream

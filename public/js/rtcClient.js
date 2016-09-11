@@ -37,6 +37,7 @@ var PeerManager = function () {
   socket.on('message', handleMessage);
   socket.on('id', function(id) {
     local_id = id;
+    console.log('<--- Local ID: ', local_id ,' --->');
   });
 
   // auto-update mechanism (beta)
