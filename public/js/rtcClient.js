@@ -1,7 +1,8 @@
 'use strict';
-var PeerManager = function () {
+var PeerManager = function (arg_user_type) {
   // init socket manager
-  var local_id,
+  var userType = arg_user_type,
+      LocalId,
       config = {
         peerConnectionConfig: {
           iceServers: [
@@ -36,8 +37,8 @@ var PeerManager = function () {
   // set socket
   socket.on('message', handleMessage);
   socket.on('id', function(id) {
-    local_id = id;
-    console.log('<--- Local ID: ', local_id ,' --->');
+    LocalId = id;
+    console.log('<--- Local ID: ', LocalId ,' --->');
   });
 
   // auto-update mechanism (beta)
@@ -68,8 +69,8 @@ var PeerManager = function () {
   // end of auto-update mechanism
 
   // add peer
-  function addPeer(remoteId) {
-    var peer = new Peer(config.peerConnectionConfig, config.peerConnectionConstraints, remoteId);
+  function addPeer(remoteId, arg_usertype) {
+    var peer = new Peer(config.peerConnectionConfig, config.peerConnectionConstraints, remoteId, arg_usertype);
     peer.pc.onicecandidate = function(event) {
       if (event.candidate) {
         send('candidate', remoteId, {
@@ -188,7 +189,7 @@ var PeerManager = function () {
   function handleMessage(message) {
     var type = message.type,
         from = message.from,
-        pc = (peerDatabase[from] || addPeer(from)).pc;
+        pc = (peerDatabase[from] || addPeer(from, userType)).pc;
 
     console.log('<---handleMessage--->');
     console.log('received ' + type + ' from ' + from);
@@ -275,7 +276,7 @@ var PeerManager = function () {
 
   return {
     getId: function() {
-      return local_id;
+      return LocalId;
     },
     setLocalStream: function(stream) {
       if(!stream) {
@@ -290,11 +291,11 @@ var PeerManager = function () {
       localStream = stream;
     }, 
     toggleLocalStream: function(remoteId) {
-      var peer = peerDatabase[remoteId] || addPeer(remoteId);
+      var peer = peerDatabase[remoteId] || addPeer(remoteId, userType);
       toggleLocalStream(peer.pc);
     },
     peerInit: function(remoteId) {
-      var peer = peerDatabase[remoteId] || addPeer(remoteId);
+      var peer = peerDatabase[remoteId] || addPeer(remoteId, userType);
       send('init', remoteId, null);
       return peer;
     },
@@ -326,28 +327,13 @@ var PeerManager = function () {
 * RTCPeer connection is built up here and the remote video tag is created here as well
 * Therefore, the recording mechanism can be developed here
 */
-var Peer = function (pcConfig, pcConstraints, arg_remote_id){
+var Peer = function (pcConfig, pcConstraints, arg_remote_id, arg_usertype){
   this.pc = new RTCPeerConnection(pcConfig, pcConstraints);
   this.remoteVideoEl = document.createElement('video');
   this.remoteVideoEl.controls = true;
   this.remoteVideoEl.autoplay = true;
   this.remoteVideoEl.muted = true; // tmp init
   this.remoteVideoEl.id = arg_remote_id; // to set the remote id for future use
-
-  //
-  this.startRecordingBtn = document.createElement('input'),
-  this.stopRecordingBtn = document.createElement('input');
-
-  this.startRecordingBtn.setAttribute('type', 'button');
-  this.stopRecordingBtn.setAttribute('type', 'button');
-
-  this.startRecordingBtn.className = 'col-sm-6 col-xs-12 btn btn-default';
-  this.stopRecordingBtn.className = 'col-sm-6 col-xs-12 btn btn-default';
-
-  this.startRecordingBtn.setAttribute('value', 'Start Recording');
-  this.stopRecordingBtn.setAttribute('value', 'Stop Recording');
-
-  this.stopRecordingBtn.setAttribute('disabled', true);
 
   // create remote video div
   this.remoteVideosDiv = document.createElement('div');
@@ -356,6 +342,23 @@ var Peer = function (pcConfig, pcConstraints, arg_remote_id){
   this.remoteVideosDiv.appendChild(document.createElement('hr'));
   this.remoteVideosDiv.appendChild(this.remoteVideoEl);
   this.remoteVideosDiv.appendChild(document.createElement('br'));
-  this.remoteVideosDiv.appendChild(this.startRecordingBtn);
-  this.remoteVideosDiv.appendChild(this.stopRecordingBtn);
+  
+  if(arg_usertype === 'broadcast'){
+    // set btns for rtcRecorder
+    this.startRecordingBtn = document.createElement('input'),
+    this.stopRecordingBtn = document.createElement('input');
+
+    this.startRecordingBtn.setAttribute('type', 'button');
+    this.stopRecordingBtn.setAttribute('type', 'button');
+
+    this.startRecordingBtn.className = 'col-sm-6 col-xs-12 btn btn-default';
+    this.stopRecordingBtn.className = 'col-sm-6 col-xs-12 btn btn-default';
+
+    this.startRecordingBtn.setAttribute('value', 'Start Recording');
+    this.stopRecordingBtn.setAttribute('value', 'Stop Recording');
+
+    this.stopRecordingBtn.setAttribute('disabled', true);
+    this.remoteVideosDiv.appendChild(this.startRecordingBtn);
+    this.remoteVideosDiv.appendChild(this.stopRecordingBtn);
+  }
 }

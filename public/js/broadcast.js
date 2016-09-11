@@ -55,7 +55,7 @@
     });
 
     window.broadcastApp.factory('client', function(){
-      return new PeerManager();
+      return new PeerManager('broadcast');
     });
 
     window.broadcastApp.factory('binaryjsClient', function(){

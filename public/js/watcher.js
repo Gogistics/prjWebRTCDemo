@@ -47,11 +47,7 @@
 
     // PeerManager factory as client of handling peer information (PeerManager is from rtcClient.js)
     window.watcherApp.factory('client', function(){
-      return new PeerManager();
-    });
-
-    window.watcherApp.factory('binaryjsClient', function(){
-      return new BinaryClient('ws://45.79.106.150:8888');
+      return new PeerManager('watcher');
     });
 
     window.watcherApp.factory('fingerprintManager', function(){
@@ -59,7 +55,7 @@
     });
 
     // watcher controller which handle everything inside watcher scope
-    window.watcherApp.controller('watcherCtrl', ['$scope', '$window', 'APP_VALUES', 'dataProvider', 'client', 'binaryjsClient', 'fingerprintManager', function($scope, $window, APP_VALUES, dataProvider, client, binaryjsClient, fingerprintManager){
+    window.watcherApp.controller('watcherCtrl', ['$scope', '$window', 'APP_VALUES', 'dataProvider', 'client', 'fingerprintManager', function($scope, $window, APP_VALUES, dataProvider, client, fingerprintManager){
       // fingerprint
       APP_VALUES.FINGERPRINT = fingerprintManager.get();
 
@@ -111,73 +107,10 @@
       }
       client.addExternalMechanism('load_data', ctrl.loadData);
 
-
-      binaryjsClient.on('open', function(stream) {
-        console.log('<---binaryjsStream is open--->');
-        console.log(stream);
-        APP_VALUES.BINARY_STREAM = binaryjsClient.createStream({from: 'watcher-test'});
-        console.log(APP_VALUES.BINARY_STREAM);
-
-        APP_VALUES.BINARY_STREAM.on('data', function(data){
-          console.log(data);
-        });
-      });
-
-      binaryjsClient.on('error', function(err){
-        console.log('<--- BinaryJS Connection Error --->');
-        console.log(err);
-      });
-
       ctrl.view = function(arg_stream){
         if(!arg_stream.isPlaying){
           // get peer by stream id
           var remotePeer = client.peerInit(arg_stream['id']);
-          // set event listener of starting recording
-          remotePeer.startRecordingBtn.addEventListener('click', function(e){
-            e.preventDefault();
-            e.stopPropagation();
-
-            remotePeer.stopRecordingBtn.disabled = false; // switch stop btn status
-            remotePeer.startRecordingBtn.disabled = true; // switch start btn status
-
-            // rtcRecorder setting
-            console.log('<--- remote stream --->');
-            console.log(ctrl.remoteStreamsDB[remotePeer.remoteVideoEl.id]);
-            ctrl.startTimestamp = new Date().getTime();
-            ctrl.rtcRecorder = RecordRTC( ctrl.remoteStreamsDB[remotePeer.remoteVideoEl.id],
-                                          {bufferSize: 16384, type: 'video', frameInterval: 20}, function(arg_data){
-                                            // convert stream to unit 16 array to pipe data via binary stream to cloud server
-                                            var arrayBuffer, uint16Array;
-                                            var fileReader = new FileReader();
-                                            fileReader.onload = function() {
-                                                arrayBuffer = this.result;
-                                                uint16Array = new Uint16Array(arrayBuffer, 0, (arrayBuffer.length - 1));
-                                                if( !!APP_VALUES.BINARY_STREAM && !!uint16Array){
-                                                    APP_VALUES.BINARY_STREAM.write(uint16Array);
-                                                    console.log(uint16Array);
-                                                }else{
-                                                    console.log(arrayBuffer);
-                                                }
-                                            };
-                                            fileReader.readAsArrayBuffer(arg_data);
-                                          });
-            ctrl.rtcRecorder.startRecording();
-          });
-
-          // set event listener of stopping recording
-          remotePeer.stopRecordingBtn.addEventListener('click', function(e){
-            e.preventDefault();
-            e.stopPropagation();
-
-            remotePeer.startRecordingBtn.disabled = false; // switch stop btn status
-            remotePeer.stopRecordingBtn.disabled = true; // switch start btn status
-            APP_VALUES.BINARY_STREAM.end(); // end writing stream
-
-            ctrl.stopTimestamp = new Date().getTime();
-            var fileName = ctrl.name + '-' + ctrl.startTimestamp + '_' + ctrl.stopTimestamp; // set temporary file name
-            ctrl.rtcRecorder.stopRecording();
-            ctrl.rtcRecorder.save(fileName); // optional
-          });
           arg_stream.isPlaying = !arg_stream.isPlaying;
         }else{
           console.log('remove remote stream...');
