@@ -58,7 +58,7 @@
       return new PeerManager();
     });
 
-    window.broadcastApp.factory('binaryjsClient', function(APP_VALUES){
+    window.broadcastApp.factory('binaryjsClient', function(){
       return new BinaryClient('ws://45.79.106.150:8888');
     });
 
@@ -119,6 +119,7 @@
       ctrl.link = '';
       ctrl.cameraIsOn = false;
       ctrl.userType = null;
+      ctrl.watchers = [];
 
       ctrl.init = function(arg_user_type){
         ctrl.userType = arg_user_type;

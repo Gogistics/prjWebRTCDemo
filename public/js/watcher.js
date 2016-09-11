@@ -21,7 +21,8 @@
     // global values
     window.watcherApp.value('APP_VALUES', {
       EMAIL: 'gogistics@gogistics-tw.com',
-      BINARY_STREAM: null
+      BINARY_STREAM: null,
+      FINGERPRINT: null
     });
 
     window.watcherApp.config(function(){
@@ -58,7 +59,7 @@
     });
 
     // watcher controller which handle everything inside watcher scope
-    window.watcherApp.controller('watcherCtrl', ['$scope', '$window', 'dataProvider', 'client', 'binaryjsClient', 'fingerprintManager', function($scope, $window, dataProvider, client, binaryjsClient, fingerprintManager){
+    window.watcherApp.controller('watcherCtrl', ['$scope', '$window', 'APP_VALUES', 'dataProvider', 'client', 'binaryjsClient', 'fingerprintManager', function($scope, $window, APP_VALUES, dataProvider, client, binaryjsClient, fingerprintManager){
       // fingerprint
       APP_VALUES.FINGERPRINT = fingerprintManager.get();
 
@@ -110,31 +111,38 @@
       }
       client.addExternalMechanism('load_data', ctrl.loadData);
 
+
+      binaryjsClient.on('open', function(stream) {
+        console.log('<---binaryjsStream is open--->');
+        console.log(stream);
+        APP_VALUES.BINARY_STREAM = binaryjsClient.createStream({from: 'watcher-test'});
+        console.log(APP_VALUES.BINARY_STREAM);
+
+        APP_VALUES.BINARY_STREAM.on('data', function(data){
+          console.log(data);
+        });
+      });
+
+      binaryjsClient.on('error', function(err){
+        console.log('<--- BinaryJS Connection Error --->');
+        console.log(err);
+      });
+
       ctrl.view = function(arg_stream){
         if(!arg_stream.isPlaying){
-          // open up binaryjs stream
-          binaryjsClient.on('open', function(stream) {
-            console.log('<---binaryjsStream is open--->');
-            console.log(stream);
-          });
-
           // get peer by stream id
           var remotePeer = client.peerInit(arg_stream['id']);
           // set event listener of starting recording
-          remotePeer.startRecordingBtn.addEventListener('click', function(){
+          remotePeer.startRecordingBtn.addEventListener('click', function(e){
+            e.preventDefault();
+            e.stopPropagation();
+
             remotePeer.stopRecordingBtn.disabled = false; // switch stop btn status
             remotePeer.startRecordingBtn.disabled = true; // switch start btn status
 
-            // setting of binaryjsStream and rtcRecorder
-            var from = 'watcher-' + client.getId();
-            APP_VALUES.BINARY_STREAM = binaryjsClient.createStream({from: from});
-
-            // receive data
-            APP_VALUES.BINARY_STREAM.on('data', function(data){
-              console.log(data);
-            });
-
             // rtcRecorder setting
+            console.log('<--- remote stream --->');
+            console.log(ctrl.remoteStreamsDB[remotePeer.remoteVideoEl.id]);
             ctrl.startTimestamp = new Date().getTime();
             ctrl.rtcRecorder = RecordRTC( ctrl.remoteStreamsDB[remotePeer.remoteVideoEl.id],
                                           {bufferSize: 16384, type: 'video', frameInterval: 20}, function(arg_data){
@@ -157,7 +165,10 @@
           });
 
           // set event listener of stopping recording
-          remotePeer.stopRecordingBtn.addEventListener('click', function(){
+          remotePeer.stopRecordingBtn.addEventListener('click', function(e){
+            e.preventDefault();
+            e.stopPropagation();
+
             remotePeer.startRecordingBtn.disabled = false; // switch stop btn status
             remotePeer.stopRecordingBtn.disabled = true; // switch start btn status
             APP_VALUES.BINARY_STREAM.end(); // end writing stream

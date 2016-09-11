@@ -16,7 +16,12 @@ block content
           input(type="button" class="btn btn-warning" value="Stop Recording" ng-click="ctrl.stopRecording()" ng-disabled="!ctrl.isRecording")
         br
         br
-        video(id="localVideo" class="col-lg-12 col-sm-12 col-xs-12" ng-class="ctrl.isRecording ? 'is_recording' : 'is_not_recording' " muted="muted")
+        div(class="col-lg-12 col-sm-12")
+          video(id="localVideo" class="col-lg-9 col-sm-12 col-xs-12" ng-class="ctrl.isRecording ? 'is_recording' : 'is_not_recording' " muted="muted")
+          div(class="col-lg-3 col-sm-12 col-xs-12")
+            h4 Watchers
+            span(ng-repeat="watcher in ctrl.watchers track by $index")
+        hr
 
 block js_block
   // for IE 11 or browser is not IE
