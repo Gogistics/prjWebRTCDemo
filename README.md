@@ -105,6 +105,8 @@ Ref.
 
 [Video Processing Experiments with OpenCV and WebRTC (WebRTC could be used to do something similar to the project of Commma.ai)](https://github.com/concord-consortium/video-processing-experiments)
 
+[Fingerprint](https://github.com/Valve/fingerprintjs)
+
 Issues:
 
 [Can't create RTCIceCandidate](https://github.com/sarandogou/webrtc-everywhere/issues/43)
