@@ -41,8 +41,9 @@ var PeerManager = function (arg_user_type) {
     console.log('<--- Local ID: ', localId ,' --->');
   });
 
-  // auto-update mechanism (beta)
+  // auto-update mechanism
   socket.on('streamNotification', function(res){
+    console.log('<--- stream notification --->');
     console.log(res);
     if(externalMechanisms.hasOwnProperty('load_data')){
       // if remote tream off, remove stream
@@ -64,6 +65,16 @@ var PeerManager = function (arg_user_type) {
       // load data
       externalMechanisms.load_data();
       console.log('streamNotification: update stream list...');
+    }
+  });
+
+  // for broadcast to update watcher list
+  socket.on('watcherNotification', function(res){
+    console.log('<--- watcher notification --->');
+    console.log(res);
+    if(externalMechanisms.hasOwnProperty('load_watchers')){
+      console.log('watcherNotification: update watcher list...');
+      externalMechanisms.load_watchers();
     }
   });
   // end of auto-update mechanism
@@ -169,10 +180,10 @@ var PeerManager = function (arg_user_type) {
   }
   // end of offer
 
-  function update(remoteId){
-    console.log('<--- update broadcast info. --->');
+  function addWatcher(remoteId){
+    console.log('<--- addWatcher broadcast info. --->');
     console.log(remoteId);
-    socket.emit('update', {
+    socket.emit('addWatcher', {
       localId: localId,
       remoteId: remoteId,
       userType: userType
@@ -220,7 +231,7 @@ var PeerManager = function (arg_user_type) {
       case 'init':
         toggleLocalStream(pc);
         offer(from);
-        update(from);
+        addWatcher(from);
         break;
       case 'remove':
         removeStream(pc);

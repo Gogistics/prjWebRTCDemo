@@ -106,6 +106,7 @@
                     });
       }
       client.addExternalMechanism('load_data', ctrl.loadData);
+      ctrl.loadData();
 
       ctrl.view = function(arg_stream){
         if(!arg_stream.isPlaying){
@@ -118,7 +119,6 @@
           arg_stream.isPlaying = !arg_stream.isPlaying;
         }
       };
-      ctrl.loadData();
     }]);
   }
 })(jQuery);

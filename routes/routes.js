@@ -30,6 +30,17 @@ module.exports = function(app, streams) {
     });
   };
 
+  var getWatchers = function(req, res){
+    var broadcast_info = req.body;
+    streams.getWatchers(broadcast_info['id'], function(err, docs){
+      if(!err){
+       res.status(200).json({watchers: docs});
+      }else{
+        res.status(500).json([]);
+      }
+    });
+  }
+
   // set GET for login
   app.get('/', index);
 
@@ -41,4 +52,7 @@ module.exports = function(app, streams) {
 
   // get stream info. in JSON
   app.post('/streams', getStreams);
+
+  // get watchers
+  app.post('/get-watchers', getWatchers);
 }

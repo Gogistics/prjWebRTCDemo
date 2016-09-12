@@ -25,14 +25,19 @@ module.exports = function(io, streams) {
 
       // send notification to all users when new stream coming; notify user-self & need to notify other users
       // client.emit('streamNotification', 'stream_on')
-      notifyUsersWithUpdateStreamsInfo('stream_on', client.id);
+      notifyUsersWithUpdatedStreamsInfo('stream_on', client.id);
     });
     
     // receiver of update; update the doc of MongoDB
-    client.on('update', function(options) {
+    client.on('addWatcher', function(options) {
       var localId = options['localId'], remoteId = options['remoteId'], userType = options['userType'];
-      streams.update(localId, remoteId, userType, function(err, result){
-        if(err) console.log(result);
+      streams.addWatcher(localId, remoteId, userType, function(err, result){
+        if(err){
+          console.log('<--- error of adding watcher --->');
+          console.log(err);
+        }else{
+          updateWatcherList('add_watcher', localId);
+        }
       });
     });
 
@@ -40,7 +45,12 @@ module.exports = function(io, streams) {
     client.on('removeWatcher', function(options){
       var localId = options['localId'], remoteId = options['remoteId'], userType = options['userType'];
       streams.removeWatcher(localId, remoteId, userType, function(err, result){
-        if(err) console.log(result);
+        if(err){
+          console.log('<--- error of removing watcher --->');
+          console.log(err);
+        }else{
+          updateWatcherList('remove_watcher', localId);
+        }
       });
     });
 
@@ -53,6 +63,10 @@ module.exports = function(io, streams) {
       client_to.emit('serviceNotification', arg_details);
     });
 
+    // disconnect and leave receiver; "disconnect" and "leave" function the same way in this tutorial
+    client.on('disconnect', leave);
+    client.on('leave', leave);
+
     function leave(arg_info) {
       console.log('-- ' + client.id + ' left --');
       streams.removeStream(client.id, function(err, result){
@@ -61,23 +75,31 @@ module.exports = function(io, streams) {
 
       // send notification to all users when stream leaves
       // client.emit('streamNotification', 'stream_off');
-      notifyUsersWithUpdateStreamsInfo('stream_off', client.id);
+      notifyUsersWithUpdatedStreamsInfo('stream_off', client.id);
     }
 
     // notification to update stream list and video conatiner
-    function notifyUsersWithUpdateStreamsInfo(arg_notification_key, arg_client_id_from){
+    function notifyUsersWithUpdatedStreamsInfo(arg_notification_key, arg_client_id_from){
       var clients = io.sockets.connected;
       if(!clients || clients.length === 0){
         return false;
       }
+      console.log('<--- update stream info. --->');
       for(var key in clients){
         console.log('socket-key: ' + key);
         clients[key].emit('streamNotification', { notification_key: arg_notification_key, client_id_from: arg_client_id_from });
       }
     }
 
-    // disconnect and leave receiver; "disconnect" and "leave" function the same way in this tutorial
-    client.on('disconnect', leave);
-    client.on('leave', leave);
+    function updateWatcherList(arg_notification_key, arg_broadcast_id){
+      var clients = io.sockets.connected, broadcast;
+      if ( !clients || clients.length === 0 || !clients[arg_broadcast_id] ) {
+        return false;
+      }else{
+        console.log('<--- update watcher list --->');
+        console.log('broadcast-key: ' + arg_broadcast_id);
+        clients[arg_broadcast_id].emit('watcherNotification', {notification_key: arg_notification_key});
+      }
+    }
   });
 };

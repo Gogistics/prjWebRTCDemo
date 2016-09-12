@@ -155,6 +155,20 @@
         }
       }
 
+      ctrl.getWatchers = function(){
+        var customHeaders = { 'current_cookie': $window.document.cookie,
+                              'Content-Type': 'application/json'};
+        dataProvider.getStreams('/get-watchers', customHeaders, {id: client.getId()})
+                    .success(function(data, status, headers, config){
+                      console.log(data);
+                      ctrl.watchers = data['watchers'];
+                    })
+                    .error(function(data, status, headers, config){
+                      console.log(data);
+                    });
+      }
+      client.addExternalMechanism('load_watchers', ctrl.getWatchers);
+
       ctrl.isRecording = false;
       ctrl.startRecording = function(){
         if(!ctrl.isRecording){
