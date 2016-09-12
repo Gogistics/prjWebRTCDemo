@@ -30,7 +30,8 @@ module.exports = function(io, streams) {
     
     // receiver of update; update the doc of MongoDB
     client.on('update', function(options) {
-      streams.update(client.id, options.name, options.user_type, function(err, result){
+      var localId = options['localId'], remoteId = options['remoteId'], userType = options['userType'];
+      streams.update(localId, remoteId, userType, function(err, result){
         if(err) console.log(result);
       });
     });

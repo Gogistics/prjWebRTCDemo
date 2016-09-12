@@ -68,14 +68,10 @@ module.exports = function() {
     },
 
     // update socket infor
-    update : function(arg_id, arg_name, arg_user_type, callback) {
-      if(arg_user_type === 'watcher' || arg_user_type === 'broadcast'){
-        socketCollection.updateOne({id: arg_id}, {$set: {name: arg_name}}, function(err, result){
-          callback(err, result);
-        });
-      }else{
-        callback('invalid user type', {});
-      };
+    update : function(arg_local_id, arg_remote_id, arg_user_type, callback) {
+      socketCollection.updateOne({id: arg_id}, {$addToSet: {watchers: arg_remote_id}}, function(err, result){
+        callback(err, result);
+      });
     },
 
     // get stream list; may be unnecessary for using cloud db

@@ -2,7 +2,7 @@
 var PeerManager = function (arg_user_type) {
   // init socket manager
   var userType = arg_user_type,
-      LocalId,
+      localId,
       config = {
         peerConnectionConfig: {
           iceServers: [
@@ -37,8 +37,8 @@ var PeerManager = function (arg_user_type) {
   // set socket
   socket.on('message', handleMessage);
   socket.on('id', function(id) {
-    LocalId = id;
-    console.log('<--- Local ID: ', LocalId ,' --->');
+    localId = id;
+    console.log('<--- Local ID: ', localId ,' --->');
   });
 
   // auto-update mechanism (beta)
@@ -169,6 +169,16 @@ var PeerManager = function (arg_user_type) {
   }
   // end of offer
 
+  function update(remoteId){
+    console.log('<--- update watcher info. --->');
+    console.log(remoteId);
+    socket.emit('update', {
+      localId: localId,
+      remoteId: remoteId,
+      userType: userType
+    });
+  }
+
   // set SDP constraints
   function setSdpConstraints() {
     return !!navigator.mozGetUserMedia ?
@@ -210,6 +220,7 @@ var PeerManager = function (arg_user_type) {
         break;
       case 'answer':
         if (!!message.payload) pc.setRemoteDescription(new RTCSessionDescription(message.payload)).then(function(){ console.log('successfully receive offer'); }).catch(error);
+        update(from);
         break;
       case 'candidate':
         if(pc.remoteDescription) {
@@ -276,7 +287,7 @@ var PeerManager = function (arg_user_type) {
 
   return {
     getId: function() {
-      return LocalId;
+      return localId;
     },
     setLocalStream: function(stream) {
       if(!stream) {
