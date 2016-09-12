@@ -69,7 +69,17 @@ module.exports = function() {
 
     // update socket infor
     update : function(arg_local_id, arg_remote_id, arg_user_type, callback) {
-      socketCollection.updateOne({id: arg_id}, {$addToSet: {watchers: arg_remote_id}}, function(err, result){
+      socketCollection.updateOne({id: arg_local_id}, {$addToSet: {servedWatchers: {watcher_id: arg_remote_id} }}, function(err, result){
+        callback(err, result);
+      });
+    },
+
+    // remove Watcher from broadcast doc
+    removeWatcher : function(arg_local_id, arg_remote_id, arg_user_type, callback){
+      console.log('<---remove watcher from broadcast doc--->');
+      console.log('Local ID: ', arg_local_id);
+      console.log('Remote ID: ', arg_remote_id);
+      socketCollection.update({id: arg_local_id}, {$pull: {servedWatchers: {watcher_id: arg_remote_id} }}, function(err, result){
         callback(err, result);
       });
     },

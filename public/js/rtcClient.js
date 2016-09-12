@@ -170,9 +170,20 @@ var PeerManager = function (arg_user_type) {
   // end of offer
 
   function update(remoteId){
-    console.log('<--- update watcher info. --->');
+    console.log('<--- update broadcast info. --->');
     console.log(remoteId);
     socket.emit('update', {
+      localId: localId,
+      remoteId: remoteId,
+      userType: userType
+    });
+  }
+  
+  // remove stream ID from broadcast doc.
+  function removeWatcherIdFromDB(remoteId){
+    console.log('<--- remove watcher from broadcast doc. --->');
+    console.log(remoteId);
+    socket.emit('removeWatcher', {
       localId: localId,
       remoteId: remoteId,
       userType: userType
@@ -209,9 +220,11 @@ var PeerManager = function (arg_user_type) {
       case 'init':
         toggleLocalStream(pc);
         offer(from);
+        update(from);
         break;
       case 'remove':
         removeStream(pc);
+        removeWatcherIdFromDB(from);
         offer(from);
         break;
       case 'offer':
@@ -220,7 +233,6 @@ var PeerManager = function (arg_user_type) {
         break;
       case 'answer':
         if (!!message.payload) pc.setRemoteDescription(new RTCSessionDescription(message.payload)).then(function(){ console.log('successfully receive offer'); }).catch(error);
-        update(from);
         break;
       case 'candidate':
         if(pc.remoteDescription) {

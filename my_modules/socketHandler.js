@@ -36,6 +36,14 @@ module.exports = function(io, streams) {
       });
     });
 
+    // remove stream ID from broadcast doc
+    client.on('removeWatcher', function(options){
+      var localId = options['localId'], remoteId = options['remoteId'], userType = options['userType'];
+      streams.removeWatcher(localId, remoteId, userType, function(err, result){
+        if(err) console.log(result);
+      });
+    });
+
     // receiver of service notification; notify others with news from the users
     client.on('serviceNotification', function(arg_details){
       var client_to = io.sockets.connected[arg_details.to];
