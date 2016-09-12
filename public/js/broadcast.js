@@ -144,7 +144,7 @@
           camera.start().then(function(result){
             // send notification via socket
             ctrl.link = $window.location.host + '/' + client.getId();
-            ctrl.name = 'WebRTC Broadcast-' + client.getId();
+            ctrl.name = client.getId();
             client.send('readyToStream', {name: ctrl['name'], user_type: ctrl['userType']});
 
             // open binaryjsStream
