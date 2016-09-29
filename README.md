@@ -81,6 +81,8 @@ Ref.
 
 [WebRTC Infrastructure](http://www.html5rocks.com/en/tutorials/webrtc/infrastructure/)
 
+[Understanding WebRTC Media Connections: ICE, STUN and TURN](http://www.avaya.com/blogs/archives/2014/08/understanding-webrtc-media-connections-ice-stun-and-turn.html)
+
 [W3C WebRTC](https://w3c.github.io/webrtc-pc/)
 
 [Symmetric NAT and It’s Problems](http://www.think-like-a-computer.com/2011/09/19/symmetric-nat/)
