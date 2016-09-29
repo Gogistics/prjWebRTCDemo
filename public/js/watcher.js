@@ -26,7 +26,9 @@
     });
 
     window.watcherApp.config(function(){
-      // routing config is usually done here
+      // $compileProvider.debugInfoEnabled(false); // for production
+
+      // routing config.
     });
 
     window.watcherApp.run(function(){
