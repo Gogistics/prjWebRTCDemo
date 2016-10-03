@@ -111,6 +111,16 @@ Ref.
 
 [Fingerprint](https://github.com/Valve/fingerprintjs)
 
+Talks:
+
+[Google: What's next for WebRTC?](https://www.youtube.com/watch?v=hl3_dJxKpYo)
+
+[Swatting NATs with TURN and WebRTC](https://www.youtube.com/watch?v=JrxSDIJv5xs)
+
+[WebRTC Everywhere](https://www.youtube.com/watch?v=HJjZtXVeAuw)
+
+[WebRTC for Beginners](https://www.youtube.com/watch?v=RvJuMJUSw8U)
+
 Issues:
 
 [Can't create RTCIceCandidate](https://github.com/sarandogou/webrtc-everywhere/issues/43)
