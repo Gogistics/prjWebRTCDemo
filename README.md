@@ -68,6 +68,15 @@ Demo 1. Broadcasting with recording mechanism (Chrome/Firefox)
 
             Broadcast site receives **answer** and set session description
 
+===
+
+SocketIO with Redis
+
+[socket.io-redis](https://github.com/socketio/socket.io-redis)
+
+[Using multiple nodes of SocketIO](http://socket.io/docs/using-multiple-nodes/)
+
+===
 
 NOTE:
 
