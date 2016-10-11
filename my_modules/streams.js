@@ -69,7 +69,7 @@ module.exports = function() {
 
     // update socket infor
     addWatcher : function(arg_local_id, arg_remote_id, arg_user_type, callback) {
-      socketCollection.updateOne({id: arg_local_id}, {$addToSet: {servedWatchers: {watcher_id: arg_remote_id} }}, function(err, result){
+      socketCollection.updateOne({id: arg_local_id}, {$addToSet: {servedWatchers: {watcher_id: arg_remote_id, _id: -1} }}, function(err, result){
         callback(err, result);
       });
     },

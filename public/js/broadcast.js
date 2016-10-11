@@ -161,7 +161,7 @@
         dataProvider.getStreams('/get-watchers', customHeaders, {id: client.getId()})
                     .success(function(data, status, headers, config){
                       console.log(data);
-                      ctrl.watchers = data['watchers'];
+                      ctrl.watchers = data['servedWatchers'];
                     })
                     .error(function(data, status, headers, config){
                       console.log(data);

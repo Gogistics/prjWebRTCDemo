@@ -21,6 +21,7 @@ block content
           div(class="col-lg-3 col-sm-12 col-xs-12")
             h4 Watchers
             span(ng-repeat="watcher in ctrl.watchers track by $index")
+              span Watcher ID: [[watcher.watcher_id]]
 
 block js_block
   // for IE 11 or browser is not IE

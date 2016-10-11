@@ -34,7 +34,7 @@ module.exports = function(app, streams) {
     var broadcast_info = req.body;
     streams.getWatchers(broadcast_info['id'], function(err, docs){
       if(!err){
-       res.status(200).json({watchers: docs});
+       res.status(200).json(docs);
       }else{
         res.status(500).json([]);
       }
