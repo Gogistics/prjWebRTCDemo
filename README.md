@@ -68,6 +68,15 @@ Demo 1. Broadcasting with recording mechanism (Chrome/Firefox)
 
             Broadcast site receives **answer** and set session description
 
+===
+
+SocketIO with Redis
+
+[socket.io-redis](https://github.com/socketio/socket.io-redis)
+
+[Using multiple nodes of SocketIO](http://socket.io/docs/using-multiple-nodes/)
+
+===
 
 NOTE:
 
@@ -82,6 +91,8 @@ Ref.
 [WebRTC Infrastructure](http://www.html5rocks.com/en/tutorials/webrtc/infrastructure/)
 
 [Understanding WebRTC Media Connections: ICE, STUN and TURN](http://www.avaya.com/blogs/archives/2014/08/understanding-webrtc-media-connections-ice-stun-and-turn.html)
+
+[WebRTC beyond one-to-one communication](https://webrtchacks.com/webrtc-beyond-one-one/)
 
 [W3C WebRTC](https://w3c.github.io/webrtc-pc/)
 
@@ -107,19 +118,41 @@ Ref.
 
 [MediaStreamer](https://github.com/muaz-khan/WebRTC-Experiment/blob/master/Pre-recorded-Media-Streaming/MediaStreamer.js)
 
+[A mobile-first WebRTC client framework for building native apps](https://github.com/EricssonResearch/openwebrtc)
+
+[A React Native wrapper for the Twilio mobile SDK](https://github.com/rogchap/react-native-twilio)
+
+[A WebRTC module for React Native](https://github.com/oney/react-native-webrtc)
+
+Others:
+
 [Video Processing Experiments with OpenCV and WebRTC (WebRTC could be used to do something similar to the project of Commma.ai)](https://github.com/concord-consortium/video-processing-experiments)
 
 [Fingerprint](https://github.com/Valve/fingerprintjs)
 
 Talks:
 
+[WebRTC for Beginners](https://www.youtube.com/watch?v=RvJuMJUSw8U)
+
 [Google: What's next for WebRTC?](https://www.youtube.com/watch?v=hl3_dJxKpYo)
+
+[WebRTC How it Works and How it Breaks](https://www.youtube.com/watch?v=3TbVi9aB09k)
 
 [Swatting NATs with TURN and WebRTC](https://www.youtube.com/watch?v=JrxSDIJv5xs)
 
 [WebRTC Everywhere](https://www.youtube.com/watch?v=HJjZtXVeAuw)
 
-[WebRTC for Beginners](https://www.youtube.com/watch?v=RvJuMJUSw8U)
+[The Future of ORTC with WebRTC](https://www.youtube.com/watch?v=nQ_NgkpLyjw)
+
+[Recordings WebRTC Meetup Barcelona 2016](https://www.youtube.com/watch?v=vXia75-cay0)
+
+Companies:
+
+[TokBox](https://tokbox.com/)
+
+[Appear.in](https://appear.in/)
+
+[Temasys](https://temasys.com.sg/)
 
 Issues:
 

@@ -14,7 +14,7 @@ const express = require('express'),
     cache_time = 1 * 86400000,
     redis   = require("redis"),
     redisStore = require('connect-redis')(session),
-    client  = redis.createClient();
+    redis_session_client  = redis.createClient();
 
 // start app
 initApp();
@@ -38,7 +38,7 @@ function initApp(){
       host: 'localhost',
       port: 6378,
       pass: 'CJDC934FGHSHD7ZM23R98UV100SDZNP09',
-      client: client,
+      redis_session_client: redis_session_client,
       ttl : 3600000
     }),
     resave: false,
@@ -65,6 +65,12 @@ function initApp(){
   });
 
   // set socket handlers
-  var io = require('socket.io').listen(appServer); // make socket.io listen to port 8000
+  var io = require('socket.io').listen(appServer),
+      redis_socket_client = require('redis').createClient,
+      adapter = require('socket.io-redis'),
+      pub = redis_socket_client(6378, 'localhost', { auth_pass: 'CJDC934FGHSHD7ZM23R98UV100SDZNP09' }),
+      sub = redis_socket_client(6378, 'localhost', { return_buffers: true, auth_pass: 'CJDC934FGHSHD7ZM23R98UV100SDZNP09' });
+
+  io.adapter(adapter({ pubClient: pub, subClient: sub }));
   require('./my_modules/socketHandler.js')(io, streams); // pass socket.io and stream into stream handler
 }
