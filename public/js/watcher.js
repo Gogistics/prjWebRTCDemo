@@ -1,4 +1,10 @@
-/* bootstrap front-end MVC architecture with Angular.js */
+/**
+* WebRTC with Angular.js
+* 
+* @authoer: Alan Tai <gogistics@gogistics-tw.com>
+* @description: implement WebRTC with Angular.js
+*
+*/
 (function($){
   angular.element(document).ready(function(){
   	// bootstrap App
