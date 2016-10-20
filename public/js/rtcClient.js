@@ -79,9 +79,41 @@ var PeerManager = function (arg_user_type) {
   });
   // end of auto-update mechanism
 
+  // init local peer
+  function initLocalPeer(){
+    var localPeer = new LocalPeer(config.peerConnectionConfig, config.peerConnectionConstraints);
+
+    // data channel
+    var dataChannelOptions = {
+      maxRetransmitTime: 5000, // in milliseconds
+    };
+    var dataChannel = localPeer.pc.createDataChannel('myChannel', dataChannelOptions);
+    dataChannel.binaryType = 'arraybuffer';
+
+    dataChannel.onerror = function (error) {
+      console.log("Data Channel Error:", error);
+    };
+
+    dataChannel.onmessage = function (event) {
+      console.log("Got Data Channel Message:", event.data);
+    };
+
+    dataChannel.onopen = function () {
+      console.log('The Data Channel is open...');
+      dataChannel.send("Hello World!");
+    };
+
+    dataChannel.onclose = function () {
+      console.log("The Data Channel is Closed");
+    };
+    // end of data channel
+
+    return localPeer;
+  }
+
   // add peer
   function addPeer(remoteId, arg_usertype) {
-    var peer = new Peer(config.peerConnectionConfig, config.peerConnectionConstraints, remoteId, arg_usertype);
+    var peer = new RemotePeer(config.peerConnectionConfig, config.peerConnectionConstraints, remoteId, arg_usertype);
     peer.pc.onicecandidate = function(event) {
       if (event.candidate) {
         send('candidate', remoteId, {
@@ -157,30 +189,6 @@ var PeerManager = function (arg_user_type) {
       });
     };
     // end removeStream
-
-    // data channel
-    var dataChannelOptions = {
-      maxRetransmitTime: 5000, // in milliseconds
-    };
-    var dataChannel = peer.pc.createDataChannel('myChannel', dataChannelOptions);
-    dataChannel.onerror = function (error) {
-      console.log("Data Channel Error:", error);
-    };
-
-    dataChannel.onmessage = function (event) {
-      console.log("Got Data Channel Message:", event.data);
-    };
-
-    dataChannel.onopen = function () {
-      console.log('The Data Channel is open...');
-      dataChannel.send("Hello World!");
-    };
-
-    dataChannel.onclose = function () {
-      console.log("The Data Channel is Closed");
-    };
-
-    // end of data channel
 
     peerDatabase[remoteId] = peer;
     return peer;
@@ -360,6 +368,9 @@ var PeerManager = function (arg_user_type) {
       var peer = peerDatabase[remoteId] || addPeer(remoteId, userType);
       toggleLocalStream(peer.pc);
     },
+    localPeerInit: function(){
+      if(!window.localPeer) window.localPeer = initLocalPeer();
+    },
     peerInit: function(remoteId) {
       var peer = peerDatabase[remoteId] || addPeer(remoteId, userType);
       send('init', remoteId, null);
@@ -389,12 +400,21 @@ var PeerManager = function (arg_user_type) {
 };
 
 /*
-* Peer (remote)
+* RemotePeer (remote)
 * RTCPeer connection is built up here and the remote video tag is created here as well
 * Therefore, the recording mechanism can be developed here
 */
-var Peer = function (pcConfig, pcConstraints, arg_remote_id, arg_usertype){
+var Peer = function(pcConfig, pcConstraints){
+  // init RTC Peer Connection
   this.pc = new RTCPeerConnection(pcConfig, pcConstraints);
+};
+
+var LocalPeer = function(pcConfig, pcConstraints){
+  Peer.call(this, pcConfig, pcConstraints);
+};
+
+var RemotePeer = function (pcConfig, pcConstraints, arg_remote_id, arg_usertype){
+  Peer.call(this, pcConfig, pcConstraints);
   this.remoteVideoEl = document.createElement('video');
   this.remoteVideoEl.controls = true;
   this.remoteVideoEl.autoplay = true;

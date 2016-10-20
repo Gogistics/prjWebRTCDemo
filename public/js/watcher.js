@@ -67,6 +67,9 @@
       // fingerprint
       APP_VALUES.FINGERPRINT = fingerprintManager.get();
 
+      // init local rtc-peer
+      client.localPeerInit();
+
       // set variables and functions of ctrl
       var ctrl = this;
       ctrl.broadcastStreams = [];
