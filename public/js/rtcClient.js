@@ -150,6 +150,29 @@ var PeerManager = function (arg_user_type) {
     };
     // end removeStream
 
+    // data channel
+    var dataChannelOptions = {
+      ordered: false, // do not guarantee order
+      maxRetransmitTime: 5000, // in milliseconds
+    };
+    var dataChannel = peer.createDataChannel('myChannel', dataChannelOptions);
+    dataChannel.onerror = function (error) {
+      console.log("Data Channel Error:", error);
+    };
+
+    dataChannel.onmessage = function (event) {
+      console.log("Got Data Channel Message:", event.data);
+    };
+
+    dataChannel.onopen = function () {
+      dataChannel.send("Hello World!");
+    };
+
+    dataChannel.onclose = function () {
+      console.log("The Data Channel is Closed");
+    };
+    // end of data channel
+
     peerDatabase[remoteId] = peer;
     return peer;
   }
