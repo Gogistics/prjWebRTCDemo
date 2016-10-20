@@ -91,7 +91,15 @@ var PeerManager = function (arg_user_type) {
         });
       }
     };
+
+    // onaddstream is deprecated and use ontrack instead
     peer.pc.onaddstream = function(event) {
+      // recording mechanism could be assigned here
+      attachMediaStream(peer.remoteVideoEl, event.stream);
+      remoteVideosContainer.appendChild(peer.remoteVideosDiv);
+      remoteStreamsDB[peer.remoteVideoEl.id] = event.stream;
+    };
+    peer.pc.ontrack = function(){
       // recording mechanism could be assigned here
       attachMediaStream(peer.remoteVideoEl, event.stream);
       remoteVideosContainer.appendChild(peer.remoteVideosDiv);
@@ -152,10 +160,9 @@ var PeerManager = function (arg_user_type) {
 
     // data channel
     var dataChannelOptions = {
-      ordered: false, // do not guarantee order
       maxRetransmitTime: 5000, // in milliseconds
     };
-    var dataChannel = peer.createDataChannel('myChannel', dataChannelOptions);
+    var dataChannel = peer.pc.createDataChannel('myChannel', dataChannelOptions);
     dataChannel.onerror = function (error) {
       console.log("Data Channel Error:", error);
     };
@@ -165,12 +172,14 @@ var PeerManager = function (arg_user_type) {
     };
 
     dataChannel.onopen = function () {
+      console.log('The Data Channel is open...');
       dataChannel.send("Hello World!");
     };
 
     dataChannel.onclose = function () {
       console.log("The Data Channel is Closed");
     };
+
     // end of data channel
 
     peerDatabase[remoteId] = peer;
