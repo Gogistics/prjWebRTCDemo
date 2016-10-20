@@ -1,5 +1,8 @@
 #!/bin/bash
-# config. shell
+# Program:
+# configure MongoDB
+# History:
+# 10/12/2016
 echo "use admin" >> authentication.js
 echo "db.createUser({user:'siteUserAdmin',pwd:'standaloneadmin',roles:[{role:'userAdminAnyDatabase',db:'admin'}]})" >> authentication.js
 echo "db.auth('siteUserAdmin', 'standaloneadmin')" >> authentication.js
