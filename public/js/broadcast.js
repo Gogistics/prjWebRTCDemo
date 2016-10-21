@@ -107,7 +107,8 @@
       APP_VALUES.FINGERPRINT = fingerprintManager.get();
 
       // init local rtc-peer
-      client.localPeerInit();
+      // if(!window.localPeer) window.localPeer = client.localPeerInit();
+      // console.log(window.localPeer);
 
       // global notification when camera is on
       $scope.$on('cameraIsOn', function(event, data){

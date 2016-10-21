@@ -68,7 +68,9 @@
       APP_VALUES.FINGERPRINT = fingerprintManager.get();
 
       // init local rtc-peer
-      client.localPeerInit();
+      if(!window.localPeer) window.localPeer = client.localPeerInit();
+      console.log('<--- Local Peer --->');
+      console.log(window.localPeer);
 
       // set variables and functions of ctrl
       var ctrl = this;

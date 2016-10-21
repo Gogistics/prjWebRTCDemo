@@ -32,7 +32,9 @@ var PeerManager = function (arg_user_type) {
       remoteStreamsDB = {}, // for storing remote streams and do recording if necessary
       remoteVideosContainer = document.getElementById('remoteVideosContainer'),
       socket = io(),
-      externalMechanisms = {};
+      externalMechanisms = {},
+      sendChannel = null,
+      receiveChannel = null;
       
   // set socket
   socket.on('message', handleMessage);
@@ -87,23 +89,23 @@ var PeerManager = function (arg_user_type) {
     var dataChannelOptions = {
       maxRetransmitTime: 5000, // in milliseconds
     };
-    var dataChannel = localPeer.pc.createDataChannel('myChannel', dataChannelOptions);
-    dataChannel.binaryType = 'arraybuffer';
+    sendChannel = localPeer.pc.createDataChannel('myChannel', dataChannelOptions);
+    sendChannel.binaryType = 'arraybuffer';
 
-    dataChannel.onerror = function (error) {
+    sendChannel.onerror = function (error) {
       console.log("Data Channel Error:", error);
     };
 
-    dataChannel.onmessage = function (event) {
+    sendChannel.onmessage = function (event) {
       console.log("Got Data Channel Message:", event.data);
     };
 
-    dataChannel.onopen = function () {
+    sendChannel.onopen = function () {
       console.log('The Data Channel is open...');
       dataChannel.send("Hello World!");
     };
 
-    dataChannel.onclose = function () {
+    sendChannel.onclose = function () {
       console.log("The Data Channel is Closed");
     };
     // end of data channel
@@ -125,12 +127,13 @@ var PeerManager = function (arg_user_type) {
     };
 
     // onaddstream is deprecated and use ontrack instead
-    peer.pc.onaddstream = function(event) {
-      // recording mechanism could be assigned here
-      attachMediaStream(peer.remoteVideoEl, event.stream);
-      remoteVideosContainer.appendChild(peer.remoteVideosDiv);
-      remoteStreamsDB[peer.remoteVideoEl.id] = event.stream;
-    };
+    // peer.pc.onaddstream = function(event) {
+    //   // recording mechanism could be assigned here
+    //   attachMediaStream(peer.remoteVideoEl, event.stream);
+    //   remoteVideosContainer.appendChild(peer.remoteVideosDiv);
+    //   remoteStreamsDB[peer.remoteVideoEl.id] = event.stream;
+    // };
+
     peer.pc.ontrack = function(){
       // recording mechanism could be assigned here
       attachMediaStream(peer.remoteVideoEl, event.stream);
@@ -189,6 +192,25 @@ var PeerManager = function (arg_user_type) {
       });
     };
     // end removeStream
+
+    // data channel
+    peer.pc.ondatachannel = function(event){
+      trace('Receive channel Callback');
+      receiveChannel = event.channel;
+      receiveChannel.binaryType = 'arraybuffer';
+      receiveChannel.onmessage = function(event){
+        console.log(event.data);
+      };
+      receiveChannel.onopen = function(){
+        console.log('The Data Channel is open');
+      };
+      receiveChannel.onclose = function(){
+        console.log('The Data Channel is closed');
+      };
+      receiveChannel.onerror = function(err){
+        console.log('Data Channel Error: ', err);
+      };
+    };
 
     peerDatabase[remoteId] = peer;
     return peer;
@@ -369,7 +391,8 @@ var PeerManager = function (arg_user_type) {
       toggleLocalStream(peer.pc);
     },
     localPeerInit: function(){
-      if(!window.localPeer) window.localPeer = initLocalPeer();
+      var localPeer = initLocalPeer();
+      return localPeer;
     },
     peerInit: function(remoteId) {
       var peer = peerDatabase[remoteId] || addPeer(remoteId, userType);
